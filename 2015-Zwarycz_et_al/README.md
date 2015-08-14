@@ -25,7 +25,7 @@ When running hmmsearch with the -A option, an alignment is output in stockholm f
 
 ## CSV Files (CSV_files/)
 
-# comma-separated files that include accessions names, family, class/subclass, and accession number for each gene used in the analyses
+comma-separated files that include accessions names, family, class/subclass, and accession number for each gene used in the analyses
 
 * Capitella_teleta.csv
 * Crassostrea_gigas.csv
@@ -35,7 +35,7 @@ When running hmmsearch with the -A option, an alignment is output in stockholm f
 
 ## Alignments (Alignments/)
 
-# all alignments used in this study in PHYLIP format
+all alignments used in this study in PHYLIP format
 
 * ALL.phy
 * HOXL.phy
@@ -49,7 +49,7 @@ When running hmmsearch with the -A option, an alignment is output in stockholm f
 
 ## Tree Files (Trees/)
 
-# Treefiles in Newick or Nexus format for all trees generated in this study. 
+Treefiles in Newick or Nexus format for all trees generated in this study. 
 
 * ALL.ML.tre
 * HOXL.BAYES.tre
