@@ -12,6 +12,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+# TO RUN THIS PROGRAM:  perl biogrid.pl
+# TO GET STATS: paste the output (R Code) into R
+
 use strict;
 use warnings;
 use Data::Dumper;
