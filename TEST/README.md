@@ -1,7 +1,7 @@
- ## ** PLANNED ANALYSES FOR TESTING CTENOPHORE PHYLOGENY AND SIGNALS OF DIVERGENCE **  
- ***Principle Investigator: Joseph Ryan***  
- ___Support Personnel: Melissa DeBiasse___  
- _Draft or Version Number: v.1.0_    
+ ##PLANNED ANALYSES FOR TESTING CTENOPHORE PHYLOGENY AND SIGNALS OF DIVERGENCE  
+ **Principle Investigator: Joseph Ryan**  
+ **Support Personnel: Melissa DeBiasse**  
+ **Draft or Version Number: v.1.0**  
  
 1 INTRODUCTION: BACKGROUND INFORMATION AND SCIENTIFIC RATIONALE  
 
