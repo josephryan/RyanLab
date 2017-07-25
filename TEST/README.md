@@ -1,13 +1,13 @@
- ## **PLANNED ANALYSES FOR TESTING CTENOPHORE PHYLOGENY AND SIGNALS OF DIVERGENCE**  
+ ## ** PLANNED ANALYSES FOR TESTING CTENOPHORE PHYLOGENY AND SIGNALS OF DIVERGENCE **  
  ***Principle Investigator: Joseph Ryan***  
  ___Support Personnel: Melissa DeBiasse___  
- **Draft or Version Number: v.1.0**    
+ _Draft or Version Number: v.1.0_    
  
 1 INTRODUCTION: BACKGROUND INFORMATION AND SCIENTIFIC RATIONALE  
 
 1.1 BACKGROUND INFORMATION  
 
-Ctenophore**species** exist across a wide depth gradient and therefore experience a range of environmental conditions relating to pressure, temperature, salinity, and oxygenation. Previous ctenophore phylogenies have been based on a small number of loci and/or incomplete taxon sampling and some nodes in the phylogeny are poorly supported.  
+Ctenophore ** species ** exist across a wide depth gradient and therefore experience a range of environmental conditions relating to pressure, temperature, salinity, and oxygenation. Previous ctenophore phylogenies have been based on a small number of loci and/or incomplete taxon sampling and some nodes in the phylogeny are poorly supported.  
 
 1.2 RATIONALE  
 
