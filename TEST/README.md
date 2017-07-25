@@ -24,8 +24,17 @@ The overall objective is to construct an accurate phylogeny of the relationships
 
 ```
 TransDecoder.LongOrfs -t [transcriptome_file] -m 50  
+```
+
+```
 blastp -query longest_orfs.pep -db swissprot -max_target_seqs 1 -outfmt 6 -evalue 1e-5 -num_threads 4 > outfile.blastp.out  
+```
+
+```
 hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep  
+```
+
+```
 TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits outfile.domtblout --retain_blastp_hits outfile.blastp.out
 ```
 
