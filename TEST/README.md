@@ -104,10 +104,10 @@ ASTRID –i [infile] –o [outfile] –m bionj > file.stdout 2> file.err
 
 iv) Compute branch support using local posterior probabilities.  
 
-8)	Infer ancestral states for depth across the ctenophore phylogeny to identify depth transitions (shallow to deep and deep to shallow) and the depth state of the most recent common ctenophore ancestor
+8\. Infer ancestral states for depth across the ctenophore phylogeny to identify depth transitions (shallow to deep and deep to shallow) and the depth state of the most recent common ctenophore ancestor
 a) We will use SIMMAP to conduct character-mapping analyses under the explicit statistical models for character evolution described in SIMMAP implemented in phytools. SIMMAP uses stochastic mutational mapping to simulate the evolution of characters on a posterior distribution of trees, resulting in estimates of posterior probability (PP) for the presence or absence of each trait (i.e., depth) at each node.  
 
-9)	Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
+9\. Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
 
 a) Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14
 ```
@@ -126,19 +126,25 @@ We will use batch_files/FUBAR.bf in this repository.
 e) Use RELAX (Wertheim et al, 2015) from the HyPhy package v2.2.4 to test if the strength of selection has been relaxed or intensified along a set of branches identified a priori according to the ancestral state reconstruction [section 8].
 We will use batch_files/RELAX.bf in this repository.  
 
-10)	We will test for convergence at the genic level using the SOWH test implemented in the program SOWHAT v0.36. We will create a constraint tree such that the difference between total habitat depth is maximized between two clades. If there is an even number of taxa, there will be the same number of taxa in each clade; if there is an odd number, the taxa with the middle-depth will be assigned to the clade containing the closest depth to the middle-depth. We will use the SOWH test to compare the unconstrained gene tree to this “split-depths-constrained” tree, as well as to a species-topology-constrained tree. We will generate a metric for each orthogroup, which will be the SOWH “rank of test statistic” from the “depth-constrained” test, minus the SOWH “rank of test statistic” from the species tree topology test. A high metric is consistent with high levels convergence according to depth. Here are the commands:  
+10\. We will test for convergence at the genic level using the SOWH test implemented in the program SOWHAT v0.36. We will create a constraint tree such that the difference between total habitat depth is maximized between two clades. If there is an even number of taxa, there will be the same number of taxa in each clade; if there is an odd number, the taxa with the middle-depth will be assigned to the clade containing the closest depth to the middle-depth. We will use the SOWH test to compare the unconstrained gene tree to this “split-depths-constrained” tree, as well as to a species-topology-constrained tree. We will generate a metric for each orthogroup, which will be the SOWH “rank of test statistic” from the “depth-constrained” test, minus the SOWH “rank of test statistic” from the species tree topology test. A high metric is consistent with high levels convergence according to depth. Here are the commands:  
 
 ```
 sowhat –-constraint [depth_constraint_tree] --aln [single_gene_alignment] --name [file_name] --raxml_model [RAxML_model] > file.stdout 2> file.err
+```
+
+```
 sowhat –-constraint [species_constraint_tree] --aln [single_gene_alignment] --name [file_name] --raxml_model [RAxML_model] > file.stdout 2> file.err 
+```
+
+```
 grep 'rank of test statistic' depth/sowhat.results.txt sp/sowhat.results.txt | perl -ne 'm/=\s+(\d+)/; push @ts, $1; $num++; if ($num == 2) { $diff = $ts[0] - $ts[1]; print "$diff\n"; }'
 ```
-**3 WORK COMPLETED SO FAR WITH DATES**  
+3 WORK COMPLETED SO FAR WITH DATES  
 
 July XX 2017- we have completed steps 2.1-2.5  
 [PUBLISHED PHYLOTOCOL VERSION 1.0 July XX, 2017]
 
-**4 LITERATURE REFERENCED  
+4 LITERATURE REFERENCED  
 
 Beaulieu, J. M., & O’Meara, B. C. (2016). Detecting hidden diversification shifts in models of trait-dependent speciation and extinction. Systematic Biology, 65(4), 583-601.
 
@@ -182,9 +188,9 @@ Yamada, K. D., Tomii, K., & Katoh, K. (2016). Application of the MAFFT sequence 
 
 Yang, Ziheng. "PAML 4: phylogenetic analysis by maximum likelihood." Molecular Biology and Evolution 24.8 (2007): 1586-1591.
 
-**APPENDIX**
+APPENDIX
 
-Version Date Significant Revisions
+Version&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;Date&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Significant Revisions
 1.1
 1.2
 1.3
