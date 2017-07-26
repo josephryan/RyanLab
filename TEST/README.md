@@ -19,7 +19,7 @@ The overall objective is to construct an accurate phylogeny of the relationships
 
 2 STUDY DESIGN AND ENDPOINTS  
 
-1)	Translate ctenophore nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We set the –m flag to 50 and used the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
+1\.Translate ctenophore nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We set the –m flag to 50 and used the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
 
 ```
 TransDecoder.LongOrfs -t [transcriptome_file] -m 50  
@@ -37,7 +37,7 @@ hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep
 TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits outfile.domtblout --retain_blastp_hits outfile.blastp.out
 ```
 
-2)	We used the program [Alien Index](https://github.com/josephryan/alien_index) to remove any contaminating, non-metazoan sequences.  
+2\. We used the program [Alien Index](https://github.com/josephryan/alien_index) to remove any contaminating, non-metazoan sequences.  
 
 ```
 blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes -evalue 0.001 -out [file.out] > file.std 2> file.err
@@ -49,7 +49,7 @@ remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_trans
 
 ```
 
-3)	We identified orthogroups across ctenophore transcriptomes in OrthoFinder v1.1.4.  
+3\. We identified orthogroups across ctenophore transcriptomes in OrthoFinder v1.1.4.  
 
 ```
 orthofinder -f [dir_w_protein_fast_files] -op  
@@ -67,27 +67,28 @@ orthofinder -b [dir_w_blast_results]
 python trees_from_MSA.py [dir_w_orthofinder_results]
 ```
 
-4)	Our data set contains two individuals from the species *Nepheloctena* ‘red’. If *Nepheloctena* ‘red’ sp. 1 and 2 were present in an orthogroup, we used the script ```condense_nephred.pl``` to remove *Nepheloctena* ‘red’ sp. 2. If *Nepheloctena* ‘red’ sp. 2 was present and *Nepheloctena* ‘red’ sp. 1 was absent, we retained *Nepheloctena* ‘red’ sp. 2. The script is available in the scripts directory in this repository.  
+4\. Our data set contains two individuals from the species *Nepheloctena* ‘red’. If *Nepheloctena* ‘red’ sp. 1 and 2 were present in an orthogroup, we used the script ```condense_nephred.pl``` to remove *Nepheloctena* ‘red’ sp. 2. If *Nepheloctena* ‘red’ sp. 2 was present and *Nepheloctena* ‘red’ sp. 1 was absent, we retained *Nepheloctena* ‘red’ sp. 2. The script is available in the scripts directory in this repository.  
 
-5)	Generate single copy orthogroups. First, the script ```filter_ogs_write_scripts.pl``` retains orthogroup fasta files that contain a user-specified minimum number of taxa (for this project 28 species, 80% of the total 35) and only one sequence per species, except for *Mertensia ovum* (which was has a disproportionate number of isoforms due to an very deep sequencing). Next, the script creates a user-defined number of shell scripts that automate the following process: sequences within each orthogroup are aligned using Mafft v7.309 (```mafft-linsi --localpair --maxiterate 1000 --thread 20 [infile]```) and alignments are refined using Gblockswrapper v0.03 (```Gblockswrapper [infile.mafft] > outfile.mafft-gb```). Gblockswrapper sometimes leaves blank sequences that cause issues downstream of this pipeline; the ```remove_empty_seqs``` script removes empty sequencess and spaces from sequence lines. Maximum-likelihood orthogroup gene trees are estimated in IQTree v1.5.5 (```iqtree-omp -s [infile.mafft-gb] -nt AUTO -bb 1000 -m LG -pre [output prefix]```) and orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v1.0 (```java PhyloTreePruner [infile.tree] 28 [infile.align] 0.5 u```). The ```filter_ogs_write_scripts.pl``` and ```remove_empty_seqs``` scripts are available in the scripts directory in this respository.  
+5\. Generate single copy orthogroups. First, the script ```filter_ogs_write_scripts.pl``` retains orthogroup fasta files that contain a user-specified minimum number of taxa (for this project 28 species, 80% of the total 35) and only one sequence per species, except for *Mertensia ovum* (which was has a disproportionate number of isoforms due to an very deep sequencing). Next, the script creates a user-defined number of shell scripts that automate the following process: sequences within each orthogroup are aligned using Mafft v7.309 (```mafft-linsi --localpair --maxiterate 1000 --thread 20 [infile]```) and alignments are refined using Gblockswrapper v0.03 (```Gblockswrapper [infile.mafft] > outfile.mafft-gb```). Gblockswrapper sometimes leaves blank sequences that cause issues downstream of this pipeline; the ```remove_empty_seqs``` script removes empty sequencess and spaces from sequence lines. Maximum-likelihood orthogroup gene trees are estimated in IQTree v1.5.5 (```iqtree-omp -s [infile.mafft-gb] -nt AUTO -bb 1000 -m LG -pre [output prefix]```) and orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v1.0 (```java PhyloTreePruner [infile.tree] 28 [infile.align] 0.5 u```). The ```filter_ogs_write_scripts.pl``` and ```remove_empty_seqs``` scripts are available in the scripts directory in this respository.  
 
-6)	Concatenate 944 single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of this repository). Definition lines in each fasta file were edited (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running fasta2phylomatrix.  
+6\. Concatenate 944 single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of this repository). Definition lines in each fasta file were edited (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running fasta2phylomatrix.  
 
-7)	Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
-   a) Concatenated matrix, Maximum likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m MFP+MERGE to find best partition scheme incl. FreeRate heterogeneity and estimate the tree.
+7\. Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
+a) Concatenated matrix, Maximum likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m MFP+MERGE to find best partition scheme incl. FreeRate heterogeneity and estimate the tree.
 ```
 iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
 ```
-	b) Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
+
+b) Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
 ```
 mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain1 > chain1.out 2> chain1.err
 mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain2 > chain2.out 2> chain2.err
 bpcomp -x [burnin] [sample_every_x_number_of_trees] <chain1> <chain2>
 ```
 
-   c) Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
+c) Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
 
-      i) Generate individual maximum-likelihood gene trees in IQtree. 
+i) Generate individual maximum-likelihood gene trees in IQtree. 
 ```
 iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
 ```
