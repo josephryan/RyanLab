@@ -78,7 +78,6 @@ python trees_from_MSA.py [dir_w_orthofinder_results]
 ```
 iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
 ```
-
    b) Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
 ```
 mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain1 > chain1.out 2> chain1.err
