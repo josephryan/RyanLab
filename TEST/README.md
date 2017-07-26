@@ -5,15 +5,15 @@
  
 1 INTRODUCTION: BACKGROUND INFORMATION AND SCIENTIFIC RATIONALE  
 
-1.1 BACKGROUND INFORMATION  
+1.1 _Background Information_  
 
 Ctenophore species exist across a wide depth gradient and therefore experience a range of environmental conditions relating to pressure, temperature, salinity, and oxygenation. Previous ctenophore phylogenies have been based on a small number of loci and/or incomplete taxon sampling and some nodes in the phylogeny are poorly supported.  
 
-1.2 RATIONALE  
+1.2 _Rationale_  
 
 Over evolutionary time, many marine organisms have transitioned their home ranges to and from the deep sea despite the tremendous differences between these two habitats.  Such habitat shifts required dramatic genetic and physiological changes to these animal lineages over time. Comparisons of sequences in an accurate phylogenetic framework will lead to identification of some of the most important genetic changes that drove these transitions.  
 
-1.3 Objectives
+1.3 _Objectives_  
 
 The overall objective is to construct an accurate phylogeny of the relationships within Ctenophora and identify the genetic events that underlie physiological tolerances and adaptations to the unique challenges of the deep sea. Specifically, we aim to estimate a species phylogeny for 35 ctenophore species using transcriptome data using both concatenation- and coalescent-based species tree estimation approaches. We will generate a dataset of orthologous loci and use these data to infer species relationships and test for signals of convergence associated with depth in gene sequences. We will also perform ancestral state reconstructions to identify depth transitions and test for evidence of positive selection on these nodes.  
 
@@ -74,21 +74,21 @@ python trees_from_MSA.py [dir_w_orthofinder_results]
 6)	Concatenate 944 single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of this repository). Definition lines in each fasta file were edited (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running fasta2phylomatrix.  
 
 7)	Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
-a) Concatenated matrix, Maximum likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m MFP+MERGE to find best partition scheme incl. FreeRate heterogeneity and estimate the tree.
+   a) Concatenated matrix, Maximum likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m MFP+MERGE to find best partition scheme incl. FreeRate heterogeneity and estimate the tree.
 ```
 iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
 ```
- 
-b) Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
+
+   b) Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
 ```
 mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain1 > chain1.out 2> chain1.err
 mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain2 > chain2.out 2> chain2.err
 bpcomp -x [burnin] [sample_every_x_number_of_trees] <chain1> <chain2>
 ```
 
-c) Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
+   c) Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
 
-i) Generate individual maximum-likelihood gene trees in IQtree. 
+      i) Generate individual maximum-likelihood gene trees in IQtree. 
 ```
 iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
 ```
