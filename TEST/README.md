@@ -1,23 +1,23 @@
- ##PLANNED ANALYSES FOR TESTING CTENOPHORE PHYLOGENY AND SIGNALS OF DIVERGENCE  
- **Principle Investigator: Joseph Ryan**  
- **Support Personnel: Melissa DeBiasse**  
- **Draft or Version Number: v.1.0**  
+### PLANNED ANALYSES FOR TESTING CTENOPHORE PHYLOGENY AND SIGNALS OF DIVERGENCE  
+ Principle Investigator: Joseph Ryan  
+ Support Personnel: Melissa DeBiasse  
+ Draft or Version Number: v.1.0  
  
 1 INTRODUCTION: BACKGROUND INFORMATION AND SCIENTIFIC RATIONALE  
 
 1.1 BACKGROUND INFORMATION  
 
-Ctenophore ** species ** exist across a wide depth gradient and therefore experience a range of environmental conditions relating to pressure, temperature, salinity, and oxygenation. Previous ctenophore phylogenies have been based on a small number of loci and/or incomplete taxon sampling and some nodes in the phylogeny are poorly supported.  
+Ctenophore species exist across a wide depth gradient and therefore experience a range of environmental conditions relating to pressure, temperature, salinity, and oxygenation. Previous ctenophore phylogenies have been based on a small number of loci and/or incomplete taxon sampling and some nodes in the phylogeny are poorly supported.  
 
 1.2 RATIONALE  
 
 Over evolutionary time, many marine organisms have transitioned their home ranges to and from the deep sea despite the tremendous differences between these two habitats.  Such habitat shifts required dramatic genetic and physiological changes to these animal lineages over time. Comparisons of sequences in an accurate phylogenetic framework will lead to identification of some of the most important genetic changes that drove these transitions.  
 
-1.3 OBJECTIVES  
+1.3 Objectives
 
 The overall objective is to construct an accurate phylogeny of the relationships within Ctenophora and identify the genetic events that underlie physiological tolerances and adaptations to the unique challenges of the deep sea. Specifically, we aim to estimate a species phylogeny for 35 ctenophore species using transcriptome data using both concatenation- and coalescent-based species tree estimation approaches. We will generate a dataset of orthologous loci and use these data to infer species relationships and test for signals of convergence associated with depth in gene sequences. We will also perform ancestral state reconstructions to identify depth transitions and test for evidence of positive selection on these nodes.  
 
-**2 STUDY DESIGN AND ENDPOINTS**  
+2 STUDY DESIGN AND ENDPOINTS  
 
 1)	Translate ctenophore nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We set the –m flag to 50 and used the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
 
@@ -41,16 +41,29 @@ TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits outfile.domtblou
 
 ```
 blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes -evalue 0.001 -out [file.out] > file.std 2> file.err
+```
+
+```
 ./alien_index --blast=[file_ai.out] --alien_pattern=ALIEN [out.alien_index] 2> file.std 3> file.err 
 remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_transcriptome.fa] 2> file.std 3> file.err
+
 ```
 
 3)	We identified orthogroups across ctenophore transcriptomes in OrthoFinder v1.1.4.  
 
 ```
 orthofinder -f [dir_w_protein_fast_files] -op  
+```
+
+```
 blastp -outfmt 6 -evalue 0.001 -query [renamed_fasta_file_w_all_seqs] -db BlastDB -out outfile.txt > file.std 2> file.err
+```
+
+```
 orthofinder -b [dir_w_blast_results]
+```
+
+```
 python trees_from_MSA.py [dir_w_orthofinder_results]
 ```
 
