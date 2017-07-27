@@ -49,7 +49,7 @@ remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_trans
 
 ```
 
-### 2.3 We identified orthogroups across ctenophore transcriptomes in OrthoFinder v1.1.4.  
+#### 2.3 We identified orthogroups across ctenophore transcriptomes in OrthoFinder v1.1.4.  
 
 ```
 orthofinder -f [dir_w_protein_fast_files] -op  
@@ -67,13 +67,29 @@ orthofinder -b [dir_w_blast_results]
 python trees_from_MSA.py [dir_w_orthofinder_results]
 ```
 
-### 2.4 Our data set contains two individuals from the species *Nepheloctena* ‘red’. If *Nepheloctena* ‘red’ sp. 1 and 2 were present in an orthogroup, we used the script ```condense_nephred.pl``` to remove *Nepheloctena* ‘red’ sp. 2. If *Nepheloctena* ‘red’ sp. 2 was present and *Nepheloctena* ‘red’ sp. 1 was absent, we retained *Nepheloctena* ‘red’ sp. 2. The script is available in the scripts directory in this repository.  
+#### 2.4 Our data set contains two individuals from the species *Nepheloctena* ‘red’. If *Nepheloctena* ‘red’ sp. 1 and 2 were present in an orthogroup, we used the script ```condense_nephred.pl``` to remove *Nepheloctena* ‘red’ sp. 2. If *Nepheloctena* ‘red’ sp. 2 was present and *Nepheloctena* ‘red’ sp. 1 was absent, we retained *Nepheloctena* ‘red’ sp. 2. The script is available in the scripts directory in this repository.  
 
-### 2.5 Generate single copy orthogroups. First, the script ```filter_ogs_write_scripts.pl``` retains orthogroup fasta files that contain a user-specified minimum number of taxa (for this project 28 species, 80% of the total 35) and only one sequence per species, except for *Mertensia ovum* (which was has a disproportionate number of isoforms due to an very deep sequencing). Next, the script creates a user-defined number of shell scripts that automate the following process: sequences within each orthogroup are aligned using Mafft v7.309 (```mafft-linsi --localpair --maxiterate 1000 --thread 20 [infile]```) and alignments are refined using Gblockswrapper v0.03 (```Gblockswrapper [infile.mafft] > outfile.mafft-gb```). Gblockswrapper sometimes leaves blank sequences that cause issues downstream of this pipeline; the ```remove_empty_seqs``` script removes empty sequencess and spaces from sequence lines. Maximum-likelihood orthogroup gene trees are estimated in IQTree v1.5.5 (```iqtree-omp -s [infile.mafft-gb] -nt AUTO -bb 1000 -m LG -pre [output prefix]```) and orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v1.0 (```java PhyloTreePruner [infile.tree] 28 [infile.align] 0.5 u```). The ```filter_ogs_write_scripts.pl``` and ```remove_empty_seqs``` scripts are available in the scripts directory in this respository.  
+#### 2.5 Generate single copy orthogroups. First, the script ```filter_ogs_write_scripts.pl``` (available in this repository) retains orthogroup fasta files that contain a user-specified minimum number of taxa (for this project 28 species, 80% of the total 35) and only one sequence per species, except for *Mertensia ovum* (which was has a disproportionate number of isoforms due to an very deep sequencing). Lastly, ```filter_ogs_write_scripts.pl`` automates all of the following processes: 
 
-### 2.6 Concatenate 944 single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of this repository). Definition lines in each fasta file were edited (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running fasta2phylomatrix.  
+a) sequences within each orthogroup are aligned using Mafft v7.309 
+```mafft-linsi --localpair --maxiterate 1000 --thread 20 [infile]```
 
-### 2.7 Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
+b) alignments are refined using Gblockswrapper v0.03 (https://goo.gl/fDjan6)
+```Gblockswrapper [infile.mafft] > outfile.mafft-gb```
+
+c) Gblockswrapper sometimes leaves blank sequences that cause issues downstream of this pipeline; the ```remove_empty_seqs``` script from this repository, removes empty sequencess and spaces from sequence lines. 
+```remove_empty_seqs [outfile.mafft-gb]```
+
+d) Maximum-likelihood orthogroup gene trees are estimated in IQTree v1.5.5 
+```iqtree-omp -s [infile.mafft-gb] -nt AUTO -bb 1000 -m LG -pre [output prefix]```
+
+e) orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v1.0 
+```java PhyloTreePruner [infile.tree] 28 [infile.align] 0.5 u```
+
+
+#### 2.6 Concatenate 944 single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of this repository). Definition lines in each fasta file were edited (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running fasta2phylomatrix.  
+
+#### 2.7 Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
 a) Concatenated matrix, Maximum likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m MFP+MERGE to find best partition scheme incl. FreeRate heterogeneity and estimate the tree.
 ```
 iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
@@ -104,10 +120,10 @@ ASTRID –i [infile] –o [outfile] –m bionj > file.stdout 2> file.err
 
 > iv) Compute branch support using local posterior probabilities.  
 
-### 2.8 Infer ancestral states for depth across the ctenophore phylogeny to identify depth transitions (shallow to deep and deep to shallow) and the depth state of the most recent common ctenophore ancestor
+#### 2.8 Infer ancestral states for depth across the ctenophore phylogeny to identify depth transitions (shallow to deep and deep to shallow) and the depth state of the most recent common ctenophore ancestor
 a) We will use SIMMAP to conduct character-mapping analyses under the explicit statistical models for character evolution described in SIMMAP implemented in phytools. SIMMAP uses stochastic mutational mapping to simulate the evolution of characters on a posterior distribution of trees, resulting in estimates of posterior probability (PP) for the presence or absence of each trait (i.e., depth) at each node.  
 
-### 2.9 Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
+#### 2.9 Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
 
 a) Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14
 ```
@@ -126,7 +142,7 @@ We will use batch_files/FUBAR.bf in this repository.
 e) Use RELAX (Wertheim et al, 2015) from the HyPhy package v2.2.4 to test if the strength of selection has been relaxed or intensified along a set of branches identified a priori according to the ancestral state reconstruction [section 8].
 We will use batch_files/RELAX.bf in this repository.  
 
-### 2.10 We will test for convergence at the genic level using the SOWH test implemented in the program SOWHAT v0.36. We will create a constraint tree such that the difference between total habitat depth is maximized between two clades. If there is an even number of taxa, there will be the same number of taxa in each clade; if there is an odd number, the taxa with the middle-depth will be assigned to the clade containing the closest depth to the middle-depth. We will use the SOWH test to compare the unconstrained gene tree to this “split-depths-constrained” tree, as well as to a species-topology-constrained tree. We will generate a metric for each orthogroup, which will be the SOWH “rank of test statistic” from the “depth-constrained” test, minus the SOWH “rank of test statistic” from the species tree topology test. A high metric is consistent with high levels convergence according to depth. Here are the commands:  
+#### 2.10 We will test for convergence at the genic level using the SOWH test implemented in the program SOWHAT v0.36. We will create a constraint tree such that the difference between total habitat depth is maximized between two clades. If there is an even number of taxa, there will be the same number of taxa in each clade; if there is an odd number, the taxa with the middle-depth will be assigned to the clade containing the closest depth to the middle-depth. We will use the SOWH test to compare the unconstrained gene tree to this “split-depths-constrained” tree, as well as to a species-topology-constrained tree. We will generate a metric for each orthogroup, which will be the SOWH “rank of test statistic” from the “depth-constrained” test, minus the SOWH “rank of test statistic” from the species tree topology test. A high metric is consistent with high levels convergence according to depth. Here are the commands:  
 
 ```
 sowhat –-constraint [depth_constraint_tree] --aln [single_gene_alignment] --name [file_name] --raxml_model [RAxML_model] > file.stdout 2> file.err
