@@ -138,11 +138,7 @@ ASTRID –i [infile] –o [outfile] –m bionj > file.stdout 2> file.err
 
 #### 2.9 Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
 
-2.9.1 Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14
-
-```
-pal2nal.pl [pep.aln] [nuc.fasta] [options] > file.stdout 2> file.err
-```
+2.9.1 Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14. We used the wrapper script ```pal2nal_wrapper.pl``` (available in this repository) to match sequences from the nucleotide transcriptomes to the corresponding orthogrogroup amino acid sequences and execute PAL2NAL. 
 
 2.9.2 use aBSREL (Smith et al, 2015) from the HyPhy package v2.2.4 to rank lineages in terms of episodic diversification along each branch of the ctenophore phylogeny.
 We will use batch_files/ABSREL.bf in this repository.
