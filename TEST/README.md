@@ -72,18 +72,23 @@ python trees_from_MSA.py [dir_w_orthofinder_results]
 #### 2.5 Generate single copy orthogroups. First, the script ```filter_ogs_write_scripts.pl``` (available in this repository) retains orthogroup fasta files that contain a user-specified minimum number of taxa (for this project 28 species, 80% of the total 35) and only one sequence per species, except for *Mertensia ovum* (which was has a disproportionate number of isoforms due to an very deep sequencing). Lastly, ```filter_ogs_write_scripts.pl``` automates the following processes: 
 
 a) sequences within each orthogroup are aligned using Mafft v7.309 
+
 ```mafft-linsi --localpair --maxiterate 1000 --thread 20 [infile]```
 
 b) alignments are refined using Gblockswrapper v0.03 (https://goo.gl/fDjan6)
+
 ```Gblockswrapper [infile.mafft] > outfile.mafft-gb```
 
 c) Gblockswrapper sometimes leaves blank sequences that cause issues downstream of this pipeline; the ```remove_empty_seqs``` script from this repository, removes empty sequencess and spaces from sequence lines. 
+
 ```remove_empty_seqs [outfile.mafft-gb]```
 
 d) Maximum-likelihood orthogroup gene trees are estimated in IQTree v1.5.5 
+
 ```iqtree-omp -s [infile.mafft-gb] -nt AUTO -bb 1000 -m LG -pre [output prefix]```
 
 e) orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v1.0 
+
 ```java PhyloTreePruner [infile.tree] 28 [infile.align] 0.5 u```
 
 
@@ -91,11 +96,13 @@ e) orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v
 
 #### 2.7 Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
 a) Concatenated matrix, Maximum likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m MFP+MERGE to find best partition scheme incl. FreeRate heterogeneity and estimate the tree.
+
 ```
 iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
 ```
 
 b) Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
+
 ```
 mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain1 > chain1.out 2> chain1.err
 mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain2 > chain2.out 2> chain2.err
@@ -105,15 +112,19 @@ bpcomp -x [burnin] [sample_every_x_number_of_trees] <chain1> <chain2>
 c) Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
 
 > i) Generate individual maximum-likelihood gene trees in IQtree. 
+
 ```
 iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
 ```
 
 > ii) ASTRAL-II constrains the search space to those species trees that derive their bipartitions from the input gene trees
+
 ```
 java -jar astral.jar -i [gene_trees_file] -o [output_file] > file.stdout 2> file.err 
 ```
+
 > iii) ASTRID uses a distance matrix generated from the input gene trees to estimate the species tree and is robust to missing data
+
 ```
 ASTRID –i [infile] –o [outfile] –m bionj > file.stdout 2> file.err
 ```
@@ -126,6 +137,7 @@ a) We will use SIMMAP to conduct character-mapping analyses under the explicit s
 #### 2.9 Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
 
 a) Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14
+
 ```
 pal2nal.pl [pep.aln] [nuc.fasta] [options] > file.stdout 2> file.err
 ```
@@ -155,6 +167,7 @@ sowhat –-constraint [species_constraint_tree] --aln [single_gene_alignment] --
 ```
 grep 'rank of test statistic' depth/sowhat.results.txt sp/sowhat.results.txt | perl -ne 'm/=\s+(\d+)/; push @ts, $1; $num++; if ($num == 2) { $diff = $ts[0] - $ts[1]; print "$diff\n"; }'
 ```
+
 ## 3 WORK COMPLETED SO FAR WITH DATES  
 
 July XX 2017- we have completed steps 2.1-2.5  
