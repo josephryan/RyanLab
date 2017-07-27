@@ -69,7 +69,7 @@ python trees_from_MSA.py [dir_w_orthofinder_results]
 
 #### 2.4 Our data set contains two individuals from the species *Nepheloctena* ‘red’. If *Nepheloctena* ‘red’ sp. 1 and 2 were present in an orthogroup, we used the script ```condense_nephred.pl``` to remove *Nepheloctena* ‘red’ sp. 2. If *Nepheloctena* ‘red’ sp. 2 was present and *Nepheloctena* ‘red’ sp. 1 was absent, we retained *Nepheloctena* ‘red’ sp. 2. The script is available in the scripts directory in this repository.  
 
-#### 2.5 Generate single copy orthogroups. First, the script ```filter_ogs_write_scripts.pl``` (available in this repository) retains orthogroup fasta files that contain a user-specified minimum number of taxa (for this project 28 species, 80% of the total 35) and only one sequence per species, except for *Mertensia ovum* (which was has a disproportionate number of isoforms due to an very deep sequencing). Lastly, ```filter_ogs_write_scripts.pl`` automates all of the following processes: 
+#### 2.5 Generate single copy orthogroups. First, the script ```filter_ogs_write_scripts.pl``` (available in this repository) retains orthogroup fasta files that contain a user-specified minimum number of taxa (for this project 28 species, 80% of the total 35) and only one sequence per species, except for *Mertensia ovum* (which was has a disproportionate number of isoforms due to an very deep sequencing). Lastly, ```filter_ogs_write_scripts.pl``` automates the following processes: 
 
 a) sequences within each orthogroup are aligned using Mafft v7.309 
 ```mafft-linsi --localpair --maxiterate 1000 --thread 20 [infile]```
