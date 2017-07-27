@@ -71,23 +71,23 @@ python trees_from_MSA.py [dir_w_orthofinder_results]
 
 #### 2.5 Generate single copy orthogroups. First, the script ```filter_ogs_write_scripts.pl``` (available in this repository) retains orthogroup fasta files that contain a user-specified minimum number of taxa (for this project 28 species, 80% of the total 35) and only one sequence per species, except for *Mertensia ovum* (which was has a disproportionate number of isoforms due to an very deep sequencing). Lastly, ```filter_ogs_write_scripts.pl``` automates the following processes: 
 
-a) sequences within each orthogroup are aligned using Mafft v7.309 
+2.5.1 sequences within each orthogroup are aligned using Mafft v7.309 
 
 ```mafft-linsi --localpair --maxiterate 1000 --thread 20 [infile]```
 
-b) alignments are refined using Gblockswrapper v0.03 (https://goo.gl/fDjan6)
+2.5.2 alignments are refined using Gblockswrapper v0.03 (https://goo.gl/fDjan6)
 
 ```Gblockswrapper [infile.mafft] > outfile.mafft-gb```
 
-c) Gblockswrapper sometimes leaves blank sequences that cause issues downstream of this pipeline; the ```remove_empty_seqs``` script from this repository, removes empty sequencess and spaces from sequence lines. 
+2.5.3 Gblockswrapper sometimes leaves blank sequences that cause issues downstream of this pipeline; the ```remove_empty_seqs``` script from this repository, removes empty sequencess and spaces from sequence lines. 
 
 ```remove_empty_seqs [outfile.mafft-gb]```
 
-d) Maximum-likelihood orthogroup gene trees are estimated in IQTree v1.5.5 
+2.5.4 Maximum-likelihood orthogroup gene trees are estimated in IQTree v1.5.5 
 
 ```iqtree-omp -s [infile.mafft-gb] -nt AUTO -bb 1000 -m LG -pre [output prefix]```
 
-e) orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v1.0 
+2.5.5 orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v1.0 
 
 ```java PhyloTreePruner [infile.tree] 28 [infile.align] 0.5 u```
 
@@ -95,13 +95,14 @@ e) orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v
 #### 2.6 Concatenate 944 single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of this repository). Definition lines in each fasta file were edited (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running fasta2phylomatrix.  
 
 #### 2.7 Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
-a) Concatenated matrix, Maximum likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m MFP+MERGE to find best partition scheme incl. FreeRate heterogeneity and estimate the tree.
+
+2.7.1 Concatenated matrix, Maximum likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m MFP+MERGE to find best partition scheme incl. FreeRate heterogeneity and estimate the tree.
 
 ```
 iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
 ```
 
-b) Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
+2.7.2 Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
 
 ```
 mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain1 > chain1.out 2> chain1.err
@@ -109,7 +110,7 @@ mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain2 > chain2.out 2> chai
 bpcomp -x [burnin] [sample_every_x_number_of_trees] <chain1> <chain2>
 ```
 
-c) Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
+2.7.3 Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
 
 > i) Generate individual maximum-likelihood gene trees in IQtree. 
 
@@ -132,26 +133,27 @@ ASTRID –i [infile] –o [outfile] –m bionj > file.stdout 2> file.err
 > iv) Compute branch support using local posterior probabilities.  
 
 #### 2.8 Infer ancestral states for depth across the ctenophore phylogeny to identify depth transitions (shallow to deep and deep to shallow) and the depth state of the most recent common ctenophore ancestor
-a) We will use SIMMAP to conduct character-mapping analyses under the explicit statistical models for character evolution described in SIMMAP implemented in phytools. SIMMAP uses stochastic mutational mapping to simulate the evolution of characters on a posterior distribution of trees, resulting in estimates of posterior probability (PP) for the presence or absence of each trait (i.e., depth) at each node.  
+
+2.8.1 We will use SIMMAP to conduct character-mapping analyses under the explicit statistical models for character evolution described in SIMMAP implemented in phytools. SIMMAP uses stochastic mutational mapping to simulate the evolution of characters on a posterior distribution of trees, resulting in estimates of posterior probability (PP) for the presence or absence of each trait (i.e., depth) at each node.  
 
 #### 2.9 Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
 
-a) Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14
+2.9.1 Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14
 
 ```
 pal2nal.pl [pep.aln] [nuc.fasta] [options] > file.stdout 2> file.err
 ```
 
-b) use aBSREL (Smith et al, 2015) from the HyPhy package v2.2.4 to rank lineages in terms of episodic diversification along each branch of the ctenophore phylogeny.
+2.9.2 use aBSREL (Smith et al, 2015) from the HyPhy package v2.2.4 to rank lineages in terms of episodic diversification along each branch of the ctenophore phylogeny.
 We will use batch_files/ABSREL.bf in this repository.
 
-c) Use BUSTED (Murrell et al, 2015) from the HyPhy package v2.2.4 to identify gene-wide identification of episodic selection across our dataset.
+2.9.3 Use BUSTED (Murrell et al, 2015) from the HyPhy package v2.2.4 to identify gene-wide identification of episodic selection across our dataset.
 We will use batch file in batch_files/BUSTED.bf in this repository.
 
-d) Use FUBAR (Murrell et al, 2013) from the HyPhy package v2.2.4 to identify specific sites under positive selection.
+2.9.4 Use FUBAR (Murrell et al, 2013) from the HyPhy package v2.2.4 to identify specific sites under positive selection.
 We will use batch_files/FUBAR.bf in this repository.
 
-e) Use RELAX (Wertheim et al, 2015) from the HyPhy package v2.2.4 to test if the strength of selection has been relaxed or intensified along a set of branches identified a priori according to the ancestral state reconstruction [section 8].
+2.9.5 Use RELAX (Wertheim et al, 2015) from the HyPhy package v2.2.4 to test if the strength of selection has been relaxed or intensified along a set of branches identified a priori according to the ancestral state reconstruction [section 8].
 We will use batch_files/RELAX.bf in this repository.  
 
 #### 2.10 We will test for convergence at the genic level using the SOWH test implemented in the program SOWHAT v0.36. We will create a constraint tree such that the difference between total habitat depth is maximized between two clades. If there is an even number of taxa, there will be the same number of taxa in each clade; if there is an odd number, the taxa with the middle-depth will be assigned to the clade containing the closest depth to the middle-depth. We will use the SOWH test to compare the unconstrained gene tree to this “split-depths-constrained” tree, as well as to a species-topology-constrained tree. We will generate a metric for each orthogroup, which will be the SOWH “rank of test statistic” from the “depth-constrained” test, minus the SOWH “rank of test statistic” from the species tree topology test. A high metric is consistent with high levels convergence according to depth. Here are the commands:  
