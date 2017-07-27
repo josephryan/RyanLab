@@ -1,5 +1,5 @@
 # PLANNED ANALYSES FOR TESTING CTENOPHORE PHYLOGENY AND SIGNALS OF DIVERGENCE  
- Principle Investigator: Joseph Ryan  
+ Principle Investigator: Joseph Ryan, Steven Haddock  
  Support Personnel: Melissa DeBiasse  
  Draft or Version Number: v.1.0  
  
@@ -19,7 +19,7 @@ The overall objective is to construct an accurate phylogeny of the relationships
 
 ## 2 STUDY DESIGN AND ENDPOINTS  
 
-### 2.1 Translate ctenophore nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We set the –m flag to 50 and used the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
+#### 2.1 Translate ctenophore nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We set the –m flag to 50 and used the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
 
 ```
 TransDecoder.LongOrfs -t [transcriptome_file] -m 50  
@@ -37,7 +37,7 @@ hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep
 TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits outfile.domtblout --retain_blastp_hits outfile.blastp.out
 ```
 
-### 2.2 We used the program [Alien Index](https://github.com/josephryan/alien_index) to remove any contaminating, non-metazoan sequences.  
+#### 2.2 We used the program [Alien Index](https://github.com/josephryan/alien_index) to remove any contaminating, non-metazoan sequences.  
 
 ```
 blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes -evalue 0.001 -out [file.out] > file.std 2> file.err
@@ -88,21 +88,21 @@ bpcomp -x [burnin] [sample_every_x_number_of_trees] <chain1> <chain2>
 
 c) Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
 
-i) Generate individual maximum-likelihood gene trees in IQtree. 
+> i) Generate individual maximum-likelihood gene trees in IQtree. 
 ```
 iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
 ```
 
-ii) ASTRAL-II constrains the search space to those species trees that derive their bipartitions from the input gene trees
+> ii) ASTRAL-II constrains the search space to those species trees that derive their bipartitions from the input gene trees
 ```
 java -jar astral.jar -i [gene_trees_file] -o [output_file] > file.stdout 2> file.err 
 ```
-iii) ASTRID uses a distance matrix generated from the input gene trees to estimate the species tree and is robust to missing data
+> iii) ASTRID uses a distance matrix generated from the input gene trees to estimate the species tree and is robust to missing data
 ```
 ASTRID –i [infile] –o [outfile] –m bionj > file.stdout 2> file.err
 ```
 
-iv) Compute branch support using local posterior probabilities.  
+> iv) Compute branch support using local posterior probabilities.  
 
 ### 2.8 Infer ancestral states for depth across the ctenophore phylogeny to identify depth transitions (shallow to deep and deep to shallow) and the depth state of the most recent common ctenophore ancestor
 a) We will use SIMMAP to conduct character-mapping analyses under the explicit statistical models for character evolution described in SIMMAP implemented in phytools. SIMMAP uses stochastic mutational mapping to simulate the evolution of characters on a posterior distribution of trees, resulting in estimates of posterior probability (PP) for the presence or absence of each trait (i.e., depth) at each node.  
