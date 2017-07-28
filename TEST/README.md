@@ -37,7 +37,7 @@ hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep
 TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits outfile.domtblout --retain_blastp_hits outfile.blastp.out
 ```
 
-#### 2.2 We used the program [Alien Index](https://github.com/josephryan/alien_index) to remove any contaminating, non-metazoan sequences.  
+#### 2.2 We used the program [Alien Index](https://github.com/josephryan/alien_index) to remove any contaminating, non-metazoan sequences. The blast database (ai.fa) used in the first step is available in this repository. The metazoan and non-metazoan sequences used to create the ai.fa database, and instructions for how to create a custom database, can be found [here](https://github.com/josephryan/alien_index). 
 
 ```
 blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes -evalue 0.001 -out [file.out] > file.std 2> file.err
@@ -45,6 +45,9 @@ blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes
 
 ```
 ./alien_index --blast=[file_ai.out] --alien_pattern=ALIEN [out.alien_index] 2> file.std 3> file.err 
+
+
+```
 remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_transcriptome.fa] 2> file.std 3> file.err
 
 ```
