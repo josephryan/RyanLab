@@ -37,7 +37,7 @@ hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep
 TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits outfile.domtblout --retain_blastp_hits outfile.blastp.out
 ```
 
-#### 2.2 We used the program [Alien Index](https://github.com/josephryan/alien_index) to remove any contaminating, non-metazoan sequences. The blast database (ai.fa) used in the first step is available in this repository. The metazoan and non-metazoan sequences used to create the ai.fa database, and instructions for how to create a custom database, can be found [here](https://github.com/josephryan/alien_index). 
+#### 2.2 We used the program [Alien Index](https://github.com/josephryan/alien_index) and a database of representative metazoan and non-metazoan sequences (http://ryanlab.whitney.ufl.edu/downloads/alien_index/) to remove any contaminating, non-metazoan sequences. 
 
 ```
 blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes -evalue 0.001 -out [file.out] > file.std 2> file.err
@@ -141,7 +141,7 @@ ASTRID –i [infile] –o [outfile] –m bionj > file.stdout 2> file.err
 
 #### 2.9 Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
 
-2.9.1 Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14. We used the wrapper script ```pal2nal_wrapper.pl``` (available in this repository) to match sequences from the nucleotide transcriptomes to the corresponding orthogrogroup amino acid sequences and execute PAL2NAL. 
+2.9.1 Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14. We used the wrapper script ```pal2nal_wrapper.pl``` (available in this repository) to match sequences from the nucleotide transcriptomes to the corresponding orthogrogroup amino acid sequences and execute PAL2NAL. The wrapper script removes codons that correspond to amino acids that were removed by Gblockswrapper (step 2.5.3). 
 
 2.9.2 use aBSREL (Smith et al, 2015) from the HyPhy package v2.2.4 to rank lineages in terms of episodic diversification along each branch of the ctenophore phylogeny.
 We will use batch_files/ABSREL.bf in this repository.
