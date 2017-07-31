@@ -25,15 +25,15 @@ The overall objective is to construct an accurate phylogeny of the relationships
 TransDecoder.LongOrfs -t [transcriptome_file] -m 50  
 ```
 
-   ```
+```
 blastp -query longest_orfs.pep -db swissprot -max_target_seqs 1 -outfmt 6 -evalue 1e-5 -num_threads 4 > outfile.blastp.out  
 ```
 
-   ```
+```
 hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep  
 ```
 
-   ```
+```
 TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits outfile.domtblout --retain_blastp_hits outfile.blastp.out
 ```
 
@@ -45,11 +45,10 @@ blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes
 
 ```
 ./alien_index --blast=[file_ai.out] --alien_pattern=ALIEN [out.alien_index] 2> file.std 3> file.err 
-
+```
 
 ```
 remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_transcriptome.fa] 2> file.std 3> file.err
-
 ```
 
 #### 2.3 We identified orthogroups across ctenophore transcriptomes in OrthoFinder v1.1.4.  
