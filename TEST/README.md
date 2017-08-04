@@ -98,10 +98,10 @@ python trees_from_MSA.py [dir_w_orthofinder_results]
 
 #### 2.7 Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
 
-2.7.1 Concatenated matrix, Maximum likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m MFP+MERGE to find best partition scheme incl. FreeRate heterogeneity and estimate the tree.
+2.7.1 Concatenated matrix, Maximum Likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m TEST to find best partition scheme and estimate the tree. The partition file will be created with the script fasta2pgylomatrix, which is available in this respository.
 
 ```
-iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
+iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m TEST –bb 1000 –bspec GENESITE
 ```
 
 2.7.2 Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
