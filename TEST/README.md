@@ -1,7 +1,7 @@
 # PLANNED ANALYSES FOR TESTING CTENOPHORE PHYLOGENY AND SIGNALS OF DIVERGENCE  
  Principle Investigator: Joseph Ryan, Steven Haddock  
  Support Personnel: Melissa DeBiasse  
- Draft or Version Number: v.1.0 
+ Draft or Version Number: v.1.0  
  Date: 9 Aug 2017
  
 ## 1 INTRODUCTION: BACKGROUND INFORMATION AND SCIENTIFIC RATIONALE  
