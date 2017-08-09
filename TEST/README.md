@@ -12,11 +12,11 @@ Ctenophore species exist across a wide depth gradient and therefore experience a
 
 ### 1.2 _Rationale_  
 
-Over evolutionary time, many marine organisms have transitioned their home ranges to and from the deep sea despite the tremendous differences between these two habitats.  Such habitat shifts required dramatic genetic and physiological changes to these animal lineages over time. Comparisons of sequences in an accurate phylogenetic framework will lead to identification of some of the most important genetic changes that drove these transitions.  
+Over evolutionary time, many marine organisms have transitioned their home ranges to and from the deep sea despite the tremendous differences between these two habitats.  Such habitat shifts required dramatic genetic and physiological changes to these animal lineages. Comparisons of sequences in an accurate phylogenetic framework will lead to identification of the genetic changes that drove these transitions.  
 
 ### 1.3 _Objectives_  
 
-The overall objective is to construct an accurate phylogeny of the relationships within Ctenophora and identify the genetic events that underlie physiological tolerances and adaptations to the unique challenges of the deep sea. Specifically, we aim to estimate a species phylogeny for 35 ctenophore species using transcriptome data using both concatenation- and coalescent-based species tree estimation approaches. We will generate a dataset of orthologous loci and use these data to infer species relationships and test for signals of convergence associated with depth in gene sequences. We will also perform ancestral state reconstructions to identify depth transitions and test for evidence of positive selection on these nodes.  
+The overall objective is to construct an accurate phylogeny of the relationships within Ctenophora and identify the genetic events that underlie physiological tolerances and adaptations to the unique challenges of the deep sea. Specifically, we aim to estimate a species phylogeny for 35 ctenophore species using transcriptome data and concatenation- and coalescent-based species tree estimation approaches. We will generate a dataset of orthologous loci with which to infer species relationships and test for signals of convergence associated with depth in gene sequences. We will also perform ancestral state reconstructions to identify depth transitions and test for evidence of positive selection on these nodes.  
 
 ## 2 STUDY DESIGN AND ENDPOINTS  
 
@@ -82,7 +82,7 @@ python trees_from_MSA.py [dir_w_orthofinder_results] > tfm.out 2> tfm.err
 
 ```Gblockswrapper [infile.mafft] > outfile.mafft-gb > gbw.out 2> gbw.err```
 
-2.5.3 Gblockswrapper sometimes leaves blank sequences that cause issues downstream of this pipeline; the ```remove_empty_seqs``` script from this repository, removes empty sequencess and spaces from sequence lines. 
+2.5.3 Gblockswrapper sometimes leaves blank sequences that cause downstream issues; the ```remove_empty_seqs``` script, available in this repository, removes empty sequences and spaces from sequence lines. 
 
 ```remove_empty_seqs [outfile.mafft-gb] > res.out 2> res.err```
 
@@ -95,11 +95,11 @@ python trees_from_MSA.py [dir_w_orthofinder_results] > tfm.out 2> tfm.err
 ```java PhyloTreePruner [infile.tree] 28 [infile.align] 0.5 u > ptp.out 2> ptp.err```
 
 
-#### 2.6 Concatenate 944 single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of this repository). Definition lines in each fasta file were edited (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running fasta2phylomatrix.  
+#### 2.6 Concatenate 944 single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of this repository). Definition lines in each fasta file were edited (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running ```fasta2phylomatrix```.  
 
 #### 2.7 Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
 
-2.7.1 Concatenated matrix, Maximum Likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m TEST to find best partition scheme and estimate the tree. The partition file will be created with the script fasta2pgylomatrix, which is available in this respository.
+2.7.1 Concatenated matrix, Maximum Likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m TEST to find best partition scheme and estimate the tree. The partition file will be created with the script ```fasta2phylomatrix```, which is available in this respository.
 
 ```
 iqtree-omp –s [infile] –pre [outfile_prefix] –nt [#threads] –q [partition file] –m TEST –bb 1000 –bspec GENESITE > iqo.out 2> iqo.err
@@ -142,13 +142,13 @@ ASTRID –i [infile] –o [outfile] –m bionj > astrid.out 2> astrid.err
 ```sowhat --constraint=[topology_to_be_tested] --aln=[alignment] --name=[name] --dir=[output_dir] --rax=[raxmlHPC-PTHREADS-SSE3 -T [num_threads]] ```
 
 
-#### 2.9 Determine depths for each taxon in our analysis. We will create 3 sets of depths for each taxon. All of the remaining analyes will be performed in triplicate on each of these depths. 
+#### 2.9 Determine depths for each taxon in our analysis. We will create 3 sets of depths for each taxon. The remaining analyses will be performed in triplicate on each of the following depths. 
 
 2.9.1 Median depths - the median of all sightings of the species in MBARI logs
 
-2.9.2 Minimum depths — the minimum depth at which this species has been identified in MBARI logs
+2.9.2 Minimum depths - the minimum depth at which this species has been identified in MBARI logs
 
-2.9.3 Maximum depths — the maximum depth at which this species has been identified in MBARI logs
+2.9.3 Maximum depths - the maximum depth at which this species has been identified in MBARI logs
 
 
 #### 2.10 Infer ancestral states for depth across the ctenophore phylogeny to identify depth transitions (shallow to deep and deep to shallow) and the depth state of the most recent common ctenophore ancestor
@@ -157,27 +157,23 @@ ASTRID –i [infile] –o [outfile] –m bionj > astrid.out 2> astrid.err
 
 #### 2.11 Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
 
-2.11.1 Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14. We used the wrapper script ```pal2nal_wrapper.pl``` (available in this repository) to match sequences from the nucleotide transcriptomes to the corresponding orthogrogroup amino acid sequences and execute PAL2NAL. The wrapper script removes codons that correspond to amino acids that were removed by Gblockswrapper (step 2.5.3). 
+2.11.1 Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14. We used the wrapper script ```pal2nal_wrapper.pl``` (available in this repository) to match sequences from the nucleotide transcriptomes to the corresponding orthogroup amino acid sequences and execute PAL2NAL. The wrapper script removes codons that correspond to amino acids that were removed by Gblockswrapper (step 2.5.3). 
 
-2.11.2 use aBSREL (Smith et al, 2015) from the HyPhy package v2.2.4 to rank lineages in terms of episodic diversification along each branch of the ctenophore phylogeny.
-We will use hyphy_batchfiles/ABSREL.bf in this repository.
+2.11.2 Use aBSREL from the HyPhy package v2.2.4 to rank lineages in terms of episodic diversification along each branch of the ctenophore phylogeny. We will use hyphy_batchfiles/ABSREL.bf in this repository.
 
 ```HYPHYMPI ABSREL.bf```
 
-2.11.3 Use BUSTED (Murrell et al, 2015) from the HyPhy package v2.2.4 to identify gene-wide identification of episodic selection across our dataset.
-We will use batch file in hyphy_batchfiles/BUSTED.bf in this repository.
+2.11.3 Use BUSTED from the HyPhy package v2.2.4 to identify gene-wide identification of episodic selection across our dataset. We will use batch file in hyphy_batchfiles/BUSTED.bf in this repository.
 
 ```HYPHYMPI BUSTED.bf```
 
-2.11.4 Use FUBAR (Murrell et al, 2013) from the HyPhy package v2.2.4 to identify specific sites under positive selection.
-We will use hyphy_batchfiles/FUBAR.bf in this repository.
+2.11.4 Use FUBAR from the HyPhy package v2.2.4 to identify specific sites under positive selection. We will use hyphy_batchfiles/FUBAR.bf in this repository.
 
 ```HYPHYMPI FUBAR.bf```
 
-2.11.5 Use RELAX (Wertheim et al, 2015) from the HyPhy package v2.2.4 to test if the strength of selection has been relaxed or intensified along a set of branches identified a priori according to the ancestral state reconstruction [section 8].
-We will use hyphy_batchfiles/RELAX.bf in this repository.  
+2.11.5 Use RELAX from the HyPhy package v2.2.4 to test if the strength of selection has been relaxed or intensified along a set of branches identified a priori according to the ancestral state reconstruction [section 8]. We will use hyphy_batchfiles/RELAX.bf in this repository.  
 
-```HYPHYMPI RELAX.bf```8
+```HYPHYMPI RELAX.bf```
 
 #### 2.12 We will test for convergence at the genic level using the SOWH test implemented in the program SOWHAT v0.36. We will create a constraint tree such that the difference between total habitat depth is maximized between two clades. If there is an even number of taxa, there will be the same number of taxa in each clade; if there is an odd number, the taxa with the middle-depth will be assigned to the clade containing the closest depth to the middle-depth. We will use the SOWH test to compare the unconstrained gene tree to this “split-depths-constrained” tree, as well as to a species-topology-constrained tree. We will generate a metric for each orthogroup, which will be the SOWH “rank of test statistic” from the “depth-constrained” test, minus the SOWH “rank of test statistic” from the species tree topology test. A high metric is consistent with high levels convergence according to depth. Here are the commands:  
 
