@@ -1,7 +1,8 @@
 # PLANNED ANALYSES FOR TESTING CTENOPHORE PHYLOGENY AND SIGNALS OF DIVERGENCE  
  Principle Investigator: Joseph Ryan, Steven Haddock  
  Support Personnel: Melissa DeBiasse  
- Draft or Version Number: v.1.0  
+ Draft or Version Number: v.1.0 
+ Date: 9 Aug 2017
  
 ## 1 INTRODUCTION: BACKGROUND INFORMATION AND SCIENTIFIC RATIONALE  
 
@@ -22,19 +23,19 @@ The overall objective is to construct an accurate phylogeny of the relationships
 #### 2.1 Translate ctenophore nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We set the –m flag to 50 and used the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
 
 ```
-TransDecoder.LongOrfs -t [transcriptome_file] -m 50  
+TransDecoder.LongOrfs -t [transcriptome_file] -m 50 > td.out 2> td.err
 ```
 
 ```
-blastp -query longest_orfs.pep -db swissprot -max_target_seqs 1 -outfmt 6 -evalue 1e-5 -num_threads 4 > outfile.blastp.out  
+blastp -query longest_orfs.pep -db swissprot -max_target_seqs 1 -outfmt 6 -evalue 1e-5 -num_threads 4 > blastp.out 2> blastp.err 
 ```
 
 ```
-hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep  
+hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep > hs.out 2> hs.err
 ```
 
 ```
-TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits outfile.domtblout --retain_blastp_hits outfile.blastp.out
+TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits out.domtblout --retain_blastp_hits out.blastp.out > tdp.out 2> tdp.err
 ```
 
 #### 2.2 We used the program [Alien Index](https://github.com/josephryan/alien_index) and a database of representative metazoan and non-metazoan sequences (http://ryanlab.whitney.ufl.edu/downloads/alien_index/) to remove any contaminating, non-metazoan sequences. 
@@ -44,29 +45,29 @@ blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes
 ```
 
 ```
-./alien_index --blast=[file_ai.out] --alien_pattern=ALIEN [out.alien_index] 2> file.std 3> file.err 
+./alien_index --blast=[file_ai.out] --alien_pattern=ALIEN [out.alien_index] > ai.out 2> ai.err 
 ```
 
 ```
-remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_transcriptome.fa] 2> file.std 3> file.err
+remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_transcriptome.fa] > ra.out 2> ra.err
 ```
 
 #### 2.3 We identified orthogroups across ctenophore transcriptomes in OrthoFinder v1.1.4.  
 
 ```
-orthofinder -f [dir_w_protein_fast_files] -op  
+orthofinder -f [dir_w_protein_fast_files] -op > of.out 2> of.err
 ```
 
 ```
-blastp -outfmt 6 -evalue 0.001 -query [renamed_fasta_file_w_all_seqs] -db BlastDB -out outfile.txt > file.std 2> file.err
+blastp -outfmt 6 -evalue 0.001 -query [renamed_fasta_file_w_all_seqs] -db BlastDB -out outfile.txt > blastp.out 2> blastp.err
 ```
 
 ```
-orthofinder -b [dir_w_blast_results]
+orthofinder -b [dir_w_blast_results] > ofb.out 2> ofb.err
 ```
 
 ```
-python trees_from_MSA.py [dir_w_orthofinder_results]
+python trees_from_MSA.py [dir_w_orthofinder_results] > tfm.out 2> tfm.err
 ```
 
 #### 2.4 Our data set contains two individuals from the species *Nepheloctena* ‘red’. If *Nepheloctena* ‘red’ sp. 1 and 2 were present in an orthogroup, we used the script ```condense_nephred.pl``` to remove *Nepheloctena* ‘red’ sp. 2. If *Nepheloctena* ‘red’ sp. 2 was present and *Nepheloctena* ‘red’ sp. 1 was absent, we retained *Nepheloctena* ‘red’ sp. 2. The script is available in the scripts directory in this repository.  
@@ -75,23 +76,23 @@ python trees_from_MSA.py [dir_w_orthofinder_results]
 
 2.5.1 sequences within each orthogroup are aligned using Mafft v7.309 
 
-```mafft-linsi --localpair --maxiterate 1000 --thread 20 [infile]```
+```mafft-linsi --localpair --maxiterate 1000 --thread 20 [infile] >mafft.out 2> mafft.err```
 
 2.5.2 alignments are refined using Gblockswrapper v0.03 (https://goo.gl/fDjan6)
 
-```Gblockswrapper [infile.mafft] > outfile.mafft-gb```
+```Gblockswrapper [infile.mafft] > outfile.mafft-gb > gbw.out 2> gbw.err```
 
 2.5.3 Gblockswrapper sometimes leaves blank sequences that cause issues downstream of this pipeline; the ```remove_empty_seqs``` script from this repository, removes empty sequencess and spaces from sequence lines. 
 
-```remove_empty_seqs [outfile.mafft-gb]```
+```remove_empty_seqs [outfile.mafft-gb] > res.out 2> res.err```
 
 2.5.4 Maximum-likelihood orthogroup gene trees are estimated in IQTree v1.5.5 
 
-```iqtree-omp -s [infile.mafft-gb] -nt AUTO -bb 1000 -m LG -pre [output prefix]```
+```iqtree-omp -s [infile.mafft-gb] -nt AUTO -bb 1000 -m LG -pre [output prefix] > iq.out 2> iq.err```
 
 2.5.5 orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v1.0 
 
-```java PhyloTreePruner [infile.tree] 28 [infile.align] 0.5 u```
+```java PhyloTreePruner [infile.tree] 28 [infile.align] 0.5 u > ptp.out 2> ptp.err```
 
 
 #### 2.6 Concatenate 944 single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of this repository). Definition lines in each fasta file were edited (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running fasta2phylomatrix.  
@@ -101,15 +102,15 @@ python trees_from_MSA.py [dir_w_orthofinder_results]
 2.7.1 Concatenated matrix, Maximum Likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m TEST to find best partition scheme and estimate the tree. The partition file will be created with the script fasta2pgylomatrix, which is available in this respository.
 
 ```
-iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m TEST –bb 1000 –bspec GENESITE
+iqtree-omp –s [infile] –pre [outfile_prefix] –nt [#threads] –q [partition file] –m TEST –bb 1000 –bspec GENESITE > iqo.out 2> iqo.err
 ```
 
 2.7.2 Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
 
 ```
-mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain1 > chain1.out 2> chain1.err
-mpirun -n [# cores] pb_mpi -d [infile.phy] -cat -gtr chain2 > chain2.out 2> chain2.err
-bpcomp -x [burnin] [sample_every_x_number_of_trees] <chain1> <chain2>
+mpirun -n [# threads] pb_mpi -d [infile.phy] -cat -gtr chain1 > pb1.out 2> pb1.err
+mpirun -n [# threads] pb_mpi -d [infile.phy] -cat -gtr chain2 > pb2.out 2> pb2.err
+bpcomp -x [burnin] [sample_every_x_number_of_trees] <chain1> <chain2> > bpcomp.out 2> bpcomp.err
 ```
 
 2.7.3 Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
@@ -117,44 +118,68 @@ bpcomp -x [burnin] [sample_every_x_number_of_trees] <chain1> <chain2>
 > i) Generate individual maximum-likelihood gene trees in IQtree. 
 
 ```
-iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE
+iqtree-omp –s [infile] –pre [prefix_for_outfiles] –nt [# of cores] –q [partition file] –m MFP+MERGE –bb 1000 –bspec GENESITE > iq.out 2> iq.err
 ```
 
 > ii) ASTRAL-II constrains the search space to those species trees that derive their bipartitions from the input gene trees
 
 ```
-java -jar astral.jar -i [gene_trees_file] -o [output_file] > file.stdout 2> file.err 
+java -jar astral.jar -i [gene_trees_file] -o [output_file] > astral.out 2> astral.err
 ```
 
 > iii) ASTRID uses a distance matrix generated from the input gene trees to estimate the species tree and is robust to missing data
 
 ```
-ASTRID –i [infile] –o [outfile] –m bionj > file.stdout 2> file.err
+ASTRID –i [infile] –o [outfile] –m bionj > astrid.out 2> astrid.err
 ```
 
 > iv) Compute branch support using local posterior probabilities.  
 
-#### 2.8 Infer ancestral states for depth across the ctenophore phylogeny to identify depth transitions (shallow to deep and deep to shallow) and the depth state of the most recent common ctenophore ancestor
+#### 2.8 If there are conflicting species-tree topologies from 2.7, perform SOWH tests (implemented in sowhat v.0.36) to compare topologies. Any topologies that can be rejected with a P-Value <= 0.05 will be excluded from downstream analyes (but still reported in results). Constraint trees will be added to the phylotocol before running the tests.
 
-2.8.1 We will use SIMMAP to conduct character-mapping analyses under the explicit statistical models for character evolution described in SIMMAP implemented in phytools. SIMMAP uses stochastic mutational mapping to simulate the evolution of characters on a posterior distribution of trees, resulting in estimates of posterior probability (PP) for the presence or absence of each trait (i.e., depth) at each node.  
+2.8.1 example sowhat command line
 
-#### 2.9 Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
+```sowhat --constraint=[topology_to_be_tested] --aln=[alignment] --name=[name] --dir=[output_dir] --rax=[raxmlHPC-PTHREADS-SSE3 -T [num_threads]] ```
 
-2.9.1 Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14. We used the wrapper script ```pal2nal_wrapper.pl``` (available in this repository) to match sequences from the nucleotide transcriptomes to the corresponding orthogrogroup amino acid sequences and execute PAL2NAL. The wrapper script removes codons that correspond to amino acids that were removed by Gblockswrapper (step 2.5.3). 
 
-2.9.2 use aBSREL (Smith et al, 2015) from the HyPhy package v2.2.4 to rank lineages in terms of episodic diversification along each branch of the ctenophore phylogeny.
+#### 2.9 Determine depths for each taxon in our analysis. We will create 3 sets of depths for each taxon. All of the remaining analyes will be performed in triplicate on each of these depths. 
+
+2.9.1 Median depths - the median of all sightings of the species in MBARI logs
+
+2.9.2 Minimum depths — the minimum depth at which this species has been identified in MBARI logs
+
+2.9.3 Maximum depths — the maximum depth at which this species has been identified in MBARI logs
+
+
+#### 2.10 Infer ancestral states for depth across the ctenophore phylogeny to identify depth transitions (shallow to deep and deep to shallow) and the depth state of the most recent common ctenophore ancestor
+
+2.10.1 We will use SIMMAP to conduct character-mapping analyses under the explicit statistical models for character evolution described in SIMMAP implemented in phytools. SIMMAP uses stochastic mutational mapping to simulate the evolution of characters on a posterior distribution of trees, resulting in estimates of posterior probability (PP) for the presence or absence of each trait (i.e., depth) at each node.  
+
+#### 2.11 Identify lineages, genes, and sites under strong positive selection using the above orthogroups and ancestral state results.
+
+2.11.1 Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14. We used the wrapper script ```pal2nal_wrapper.pl``` (available in this repository) to match sequences from the nucleotide transcriptomes to the corresponding orthogrogroup amino acid sequences and execute PAL2NAL. The wrapper script removes codons that correspond to amino acids that were removed by Gblockswrapper (step 2.5.3). 
+
+2.11.2 use aBSREL (Smith et al, 2015) from the HyPhy package v2.2.4 to rank lineages in terms of episodic diversification along each branch of the ctenophore phylogeny.
 We will use batch_files/ABSREL.bf in this repository.
 
-2.9.3 Use BUSTED (Murrell et al, 2015) from the HyPhy package v2.2.4 to identify gene-wide identification of episodic selection across our dataset.
+```HYPHYMPI ABSREL.bf```
+
+2.11.3 Use BUSTED (Murrell et al, 2015) from the HyPhy package v2.2.4 to identify gene-wide identification of episodic selection across our dataset.
 We will use batch file in batch_files/BUSTED.bf in this repository.
 
-2.9.4 Use FUBAR (Murrell et al, 2013) from the HyPhy package v2.2.4 to identify specific sites under positive selection.
+```HYPHYMPI BUSTED.bf```
+
+2.11.4 Use FUBAR (Murrell et al, 2013) from the HyPhy package v2.2.4 to identify specific sites under positive selection.
 We will use batch_files/FUBAR.bf in this repository.
 
-2.9.5 Use RELAX (Wertheim et al, 2015) from the HyPhy package v2.2.4 to test if the strength of selection has been relaxed or intensified along a set of branches identified a priori according to the ancestral state reconstruction [section 8].
+```HYPHYMPI FUBAR.bf```
+
+2.11.5 Use RELAX (Wertheim et al, 2015) from the HyPhy package v2.2.4 to test if the strength of selection has been relaxed or intensified along a set of branches identified a priori according to the ancestral state reconstruction [section 8].
 We will use batch_files/RELAX.bf in this repository.  
 
-#### 2.10 We will test for convergence at the genic level using the SOWH test implemented in the program SOWHAT v0.36. We will create a constraint tree such that the difference between total habitat depth is maximized between two clades. If there is an even number of taxa, there will be the same number of taxa in each clade; if there is an odd number, the taxa with the middle-depth will be assigned to the clade containing the closest depth to the middle-depth. We will use the SOWH test to compare the unconstrained gene tree to this “split-depths-constrained” tree, as well as to a species-topology-constrained tree. We will generate a metric for each orthogroup, which will be the SOWH “rank of test statistic” from the “depth-constrained” test, minus the SOWH “rank of test statistic” from the species tree topology test. A high metric is consistent with high levels convergence according to depth. Here are the commands:  
+```HYPHYMPI RELAX.bf```8
+
+#### 2.12 We will test for convergence at the genic level using the SOWH test implemented in the program SOWHAT v0.36. We will create a constraint tree such that the difference between total habitat depth is maximized between two clades. If there is an even number of taxa, there will be the same number of taxa in each clade; if there is an odd number, the taxa with the middle-depth will be assigned to the clade containing the closest depth to the middle-depth. We will use the SOWH test to compare the unconstrained gene tree to this “split-depths-constrained” tree, as well as to a species-topology-constrained tree. We will generate a metric for each orthogroup, which will be the SOWH “rank of test statistic” from the “depth-constrained” test, minus the SOWH “rank of test statistic” from the species tree topology test. A high metric is consistent with high levels convergence according to depth. Here are the commands:  
 
 ```
 sowhat –-constraint [depth_constraint_tree] --aln [single_gene_alignment] --name [file_name] --raxml_model [RAxML_model] > file.stdout 2> file.err
@@ -170,8 +195,7 @@ grep 'rank of test statistic' depth/sowhat.results.txt sp/sowhat.results.txt | p
 
 ## 3 WORK COMPLETED SO FAR WITH DATES  
 
-July XX 2017- we have completed steps 2.1-2.5  
-[PUBLISHED PHYLOTOCOL VERSION 1.0 July XX, 2017]
+August 9 2017- we have completed steps 2.1-2.6 prior to release of phylotocol version 1.0
 
 ## 4 LITERATURE REFERENCED  
 
@@ -224,30 +248,3 @@ Version&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;Date&nbsp
 1.2  
 1.3  
 1.4  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
