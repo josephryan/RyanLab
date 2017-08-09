@@ -160,22 +160,22 @@ ASTRID –i [infile] –o [outfile] –m bionj > astrid.out 2> astrid.err
 2.11.1 Convert aligned protein sequences to nucleotide sequences with PAL2NAL v14. We used the wrapper script ```pal2nal_wrapper.pl``` (available in this repository) to match sequences from the nucleotide transcriptomes to the corresponding orthogrogroup amino acid sequences and execute PAL2NAL. The wrapper script removes codons that correspond to amino acids that were removed by Gblockswrapper (step 2.5.3). 
 
 2.11.2 use aBSREL (Smith et al, 2015) from the HyPhy package v2.2.4 to rank lineages in terms of episodic diversification along each branch of the ctenophore phylogeny.
-We will use batch_files/ABSREL.bf in this repository.
+We will use hyphy_batchfiles/ABSREL.bf in this repository.
 
 ```HYPHYMPI ABSREL.bf```
 
 2.11.3 Use BUSTED (Murrell et al, 2015) from the HyPhy package v2.2.4 to identify gene-wide identification of episodic selection across our dataset.
-We will use batch file in batch_files/BUSTED.bf in this repository.
+We will use batch file in hyphy_batchfiles/BUSTED.bf in this repository.
 
 ```HYPHYMPI BUSTED.bf```
 
 2.11.4 Use FUBAR (Murrell et al, 2013) from the HyPhy package v2.2.4 to identify specific sites under positive selection.
-We will use batch_files/FUBAR.bf in this repository.
+We will use hyphy_batchfiles/FUBAR.bf in this repository.
 
 ```HYPHYMPI FUBAR.bf```
 
 2.11.5 Use RELAX (Wertheim et al, 2015) from the HyPhy package v2.2.4 to test if the strength of selection has been relaxed or intensified along a set of branches identified a priori according to the ancestral state reconstruction [section 8].
-We will use batch_files/RELAX.bf in this repository.  
+We will use hyphy_batchfiles/RELAX.bf in this repository.  
 
 ```HYPHYMPI RELAX.bf```8
 
