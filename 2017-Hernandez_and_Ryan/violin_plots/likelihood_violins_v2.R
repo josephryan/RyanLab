@@ -1,4 +1,3 @@
-setwd("~/Dropbox/Dissertation/Alien Index/Likelihood\ of\ bootstrap\ vs\ suboptomal\ trees/")
 files<-list.files(pattern='likelihoods.csv')
 for(i in sequence(length(files))){
   data<- read.csv(files[i])
