@@ -36,17 +36,35 @@ mv SRR[number]_1.fastq SRR[number]_pass_1.fastq
 pigz -9 SRR[number]_pass_1.fastq
 ```
 
-#### 2.2 For the downloaded SRA sequences and our personal sequences we used BL-FILTER, part of the program Agalma developed by Dunn et al. 2013, in order to trim the adapters added from Illumina RNA-SEQ.   
+#### 2.2 We trimmed the adapters added from Illumina RNA-Seq for the publically available transcriptomes and our transcriptomes.     
 
-2.2.1 BL-FILTER steps for 
+2.2.1 BL-FILTER and organizational steps for downloaded transcriptomes. Similar steps were applied to our transcriptomes with slight variation at the beginning due to different file names.   
 
 ```
 bl-filter-illumina -a -i ../../00-DATA/fastq/SRR[number]_pass_1.fastq.gz -i ../../00-DATA/fastq/[number]_pass_2.fastq.gz -o SRR[number].1.fq -o SRR[number].2.fq -u SRR[number].unp.fq > blf.out 2> blf.err &
 ```
 
+We copied the trimmed adapter file and concatonated the unpaired sequences to this new file. We linked the second trimmed adapter file to a new file so that file naming was consistent. 
+
+```
+cp SRR[number].1.fq all_1.fq
 ```
 
-#### 2.3 Used Trinity v2.4.0 for de novo transcriptome assembly. Trinity runs were initially started with higher memory and central processors, however, we lowered those values due to server constraints. 
+```
+cat SRR[number].unp.fq >> all_1.fq
+```
+
+```
+ln -s SRR2830762.2.fq.gz all_2.fq.gz
+```
+
+2.2.2 We used the script ```fix_names.pl``` in order to fix the deflines of the SRA files so that they were formatted properly for transcriptome assembly using Trinity. This script is available in the scripts directory in this repository. 
+
+```
+perl /bwdata1/jfryan/38-SIMION_DATA/02-FILTER_ILLUMINA/fix_names.pl SRR2484238.1.fq.gz SRR2484238.2.fq.gz SRR2484238.unp.fq.gz > fix_sra_names.out 2> fix_sra_names.err
+```
+
+#### 2.3 We used Trinity v2.4.0 for de novo transcriptome assembly. Trinity runs were initially started with higher memory and central processors, however, we lowered those values due to server constraints. 
 
 ```
 /usr/local/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --max_memory 750G --CPU 12 --left ../01-BL-FILTER/SRR[number].1.fq.renamed --right ../01-BL-FILTER/SRR[number].2.fq.renamed --full_cleanup --normalize_reads --normalize_max_read_cov 30 > trin.out 2> trin.err &
