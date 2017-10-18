@@ -19,7 +19,7 @@
 
 #### 2.1 Search for publically available transcriptomes from SRA database (https://www.ncbi.nlm.nih.gov/sra) using the following parameters: 
 ```
-[Insert parameters from notes]
+taxa name [ORGN] AND Illumina BUTNOT genotyping BUTNOT metagenome BUTNOT mRNA
 ```
 
 2.1.1 Downloaded and split the seventeen SRR sequences using SRA toolkit (https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software). FASTQ files were then renamed and compressed. 
