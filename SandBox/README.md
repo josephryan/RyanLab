@@ -1,10 +1,9 @@
-# a place for the ryanlab to test git 
+# PLANNED ANALYSIS FOR TESTING HOLOTHURIAN PHYLOGENY AND DEVELOPING TARGET ENRICHMENT BAITS
 
-# Sea Cucumbers! 
  Principle Investigator: Joseph Ryan, Gustav Paulay 
  Support Personnel: Jessica Whelpley  
  Draft or Version Number: v.1.0  
- Date: 5 October 2017  
+ Date: 22 December 2017  
  Note: this document will be updated (updates will be tracked through github)
  
 ## 1. INTRODUCTION: BACKGROUND INFORMATION AND SCIENTIFIC RATIONALE  
