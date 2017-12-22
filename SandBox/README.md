@@ -7,7 +7,7 @@
  Date: 5 October 2017  
  Note: this document will be updated (updates will be tracked through github)
  
-## 1 INTRODUCTION: BACKGROUND INFORMATION AND SCIENTIFIC RATIONALE  
+## 1. INTRODUCTION: BACKGROUND INFORMATION AND SCIENTIFIC RATIONALE  
 
 ### 1.1 _Background Information_
 
@@ -21,7 +21,7 @@ An in-depth understanding of phylogenetic relationships is essential to understa
 
 The overall objective is to test the recently proposed topology (Miller et al. 2017) of higher-level relationships of holothurians. With the sea cucumber orthogroups identified through our phylogenetic analysis, and our recently published draft *Australostichopus mollis* genome (Long et al. 2016) we will design a set of target-enrichment baits for Holothuroidea. 
 
-## 2 STUDY DESIGN AND ENDPOINTS 
+## 2. STUDY DESIGN AND ENDPOINTS 
 
 #### 2.1 Search for publically available transcriptomes from SRA database (https://www.ncbi.nlm.nih.gov/sra) using the following parameters: 
 ```
@@ -42,9 +42,9 @@ mv SRR[number]_1.fastq SRR[number]_pass_1.fastq
 pigz -9 SRR[number]_pass_1.fastq
 ```
 
-#### 2.2 Use BL-FILTER on the publically available transcriptomes and our transcriptomes, part of the Agalma pipeline (Dunn et al. 2013) to trim the adapters added during Illumina RNA-Seq.
+#### 2.2 Transcriptome assembly and assessment. 
 
-2.2.1 BL-FILTER and organizational steps for downloaded transcriptomes. Similar steps are applied to our transcriptomes, with slight variation at the beginning due to different file names.   
+2.2.1 Use BL-FILTER on the publically available transcriptomes and our transcriptomes, part of the Agalma pipeline (Dunn et al. 2013) to trim the adapters added during Illumina RNA-Seq. BL-FILTER and organizational steps for downloaded transcriptomes. Similar steps are applied to our transcriptomes, with slight variation at the beginning due to different file names.   
 
 ```
 bl-filter-illumina -a -i ../../00-DATA/fastq/SRR[number]_pass_1.fastq.gz -i ../../00-DATA/fastq/[number]_pass_2.fastq.gz -o SRR[number].1.fq -o SRR[number].2.fq -u SRR[number].unp.fq > blf.out 2> blf.err &
@@ -61,32 +61,32 @@ cat SRR[number].unp.fq >> all_1.fq
 ```
 
 ```
-ln -s SRR2830762.2.fq.gz all_2.fq.gz
+ln -s SRR[number].2.fq.gz all_2.fq.gz
 ```
 
 2.2.2 Use the script ```fix_names.pl``` in order to fix the deflines of the SRA files so that they are formatted properly for transcriptome assembly with Trinity. This script is available in the scripts directory in this repository. 
 
 ```
-perl /bwdata1/jfryan/38-SIMION_DATA/02-FILTER_ILLUMINA/fix_names.pl SRR2484238.1.fq.gz SRR2484238.2.fq.gz SRR2484238.unp.fq.gz > fix_sra_names.out 2> fix_sra_names.err
+perl fix_names.pl SRR[number].1.fq.gz SRR[number].2.fq.gz SRR[number].unp.fq.gz > fix_sra_names.out 2> fix_sra_names.err
 ```
 
-#### 2.3 De novo transcriptome assembly with Trinity v2.4.0.  
+2.2.3 De novo transcriptome assembly with Trinity v2.4.0.  
 
 ```
 /usr/local/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --max_memory 750G --CPU 12 --left ../01-BL-FILTER/SRR[number].1.fq.renamed --right ../01-BL-FILTER/SRR[number].2.fq.renamed --full_cleanup --normalize_reads --normalize_max_read_cov 30 > trin.out 2> trin.err &
 ```
-##### Note 12/21/17: Trinity runs were initially started with higher memory and central processors, however, we lowered those values due to server constraints.
+##### Note 12/22/17: Trinity runs were initially started with higher memory and central processors, however, we lowered those values due to server constraints.
 
-#### 2.4 Use RSEM (Li and Dewey, 2011) to measure the gene and isoform abundance.
+2.2.4 Use RSEM (Li and Dewey, 2011) to measure the gene and isoform abundance.
 ```
-/usr/local/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl --transcripts ../02-TRINITY/trinity_out_dir.Trinity.fasta --seqType fq --left ../01-BL-FILTER/SRR5755244.1.fq.gz --right ../01-BL-FILTER/SRR5755244.2.fq.gz --output_dir aea --est_method RSEM --aln_method bowtie2 --thread_count 100 --prep_reference > aea.out 2> aea.err &
-```
-
-```
-rsemgetbestseqs.py ./aea/RSEM.isoforms.results ../02-TRINITY/trinity_out_dir.Trinity.fasta > rgbs.out 2> rgbs.err &
+align_and_estimate_abundance.pl --transcripts ../02-TRINITY/trinity_out_dir.Trinity.fasta --seqType fq --left [dir_with_BL-FILTER_results]/SRR[number].1.fq.gz --right [dir_with_BL-FILTER_results]/SRR[number].2.fq.gz --output_dir aea --est_method RSEM --aln_method bowtie2 --thread_count 100 --prep_reference > aea.out 2> aea.err &
 ```
 
-#### 2.5 Translate holothurian nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We will set the –m flag to 50 and use the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
+```
+rsemgetbestseqs.py ./aea/RSEM.isoforms.results [dir_with_Trinity_output]/trinity_out_dir.Trinity.fasta > rgbs.out 2> rgbs.err &
+```
+
+#### 2.3 Translate holothurian nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We will set the –m flag to 50 and use the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
 
 ```
 TransDecoder.LongOrfs -t [transcriptome_file] -m 50 > td.out 2> td.err
@@ -104,7 +104,7 @@ hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep > hs.o
 TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits out.domtblout --retain_blastp_hits out.blastp.out > tdp.out 2> tdp.err
 ```
 
-#### 2.6 The program [Alien Index](https://github.com/josephryan/alien_index) and a database of representative metazoan and non-metazoan sequences (http://ryanlab.whitney.ufl.edu/downloads/alien_index/) will allow us to remove any contaminating, non-metazoan sequences. 
+#### 2.4 The program [Alien Index](https://github.com/josephryan/alien_index) and a database of representative metazoan and non-metazoan sequences (http://ryanlab.whitney.ufl.edu/downloads/alien_index/) will allow us to remove any contaminating, non-metazoan sequences. 
 
 ```
 blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes -evalue 0.001 -out [file.out] > file.std 2> file.err
@@ -118,11 +118,11 @@ blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes
 perl /usr/local/bin/remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_transcriptome.fa] > ra.out 2> ra.err
 ```
 
-#### 2.7 Identify orthogroups across holothurian transcriptomes with OrthoFinder v1.1.8. 
+#### 2.5 Identify orthogroups across holothurian transcriptomes with OrthoFinder v1.1.8. 
 ```
 orthofinder -f [dir_w_protein_fast_files] -op > of.out 2> of.err
 ```
-##### Note 12/21/17: The first step generated 676 blastp files. We used the script `blastp_parser.pl` [which can be found in the script repository] in order to separate the blastp files into smaller .sh files so they could be executed sequentially on the servers. 
+##### Note 12/22/17: The first step generated 676 blastp files. We used the script `blastp_parser.pl` [which can be found in the script repository] in order to separate the blastp files into smaller .sh files so they could be executed sequentially on the servers. 
 
 ```
 blastp -outfmt 6 -evalue 0.001 -query [renamed_fasta_file_w_all_seqs] -db BlastDB -out outfile.txt > blastp.out 2> blastp.err
@@ -131,60 +131,54 @@ blastp -outfmt 6 -evalue 0.001 -query [renamed_fasta_file_w_all_seqs] -db BlastD
 ```
 orthofinder -b [dir_w_blast_results] > ofb.out 2> ofb.err
 ```
-##### Note: 12/21/17: At this point we recognized a mis-labeled transcriptome from the NCBI database indicating that there was a duplicate transcriptome. I re-ran: 
+##### Note: 12/22/17: At this point we recognized an incorrectly labeled transcriptome from the NCBI database indicating that there was a duplicate transcriptome. I re-ran: 
 ```
 orthofinder -b [dir_w_blast_results] > ofb.out 2> ofb.err
 ```
-##### and removed the duplicate transcriptome by placing a `#` in front of the duplicate species in the `SpeciesIDs.txt` file generated from the previous analysis. 
+##### and removed the duplicate transcriptome by placing a `#` in front of the duplicate species in the `SpeciesIDs.txt` file generated from the previous analysis. From this point forward, only 25 transcriptomes were utilized in the analysis.  
 
 ```
 python trees_from_MSA.py [dir_w_orthofinder_results] > tfm.out 2> tfm.err
 ```
 
-#### 2.8  
+#### 2.6 Some of the transcriptomes had a large number of isoforms due to deep sequencing. Because of this, it is unlikely that we will have orthogroups with single-copy genes. We will use the file `Statistics_Overall_1.csv` generated by Orthofinder to determine a minimum-number of taxa that need to be present in each orthogroup. We will then examine the average number of sequences per species (ANSPS) in the orthogroups that contain the minimum-number of taxa present. We will then choose 1000 groups with (ANSPS). 
 
-#### 2.4 Generate single copy orthogroups. First, the script ```filter_ogs_write_scripts.pl``` (available in the scripts directory of this repository) retains orthogroup fasta files that contain a user-specified minimum number of taxa (need to determine the scope of this). Lastly, ```filter_ogs_write_scripts.pl``` automates the following processes: 
+##### Note 12/22/17: Based on the results of orthofinder, we determined the minimum-number of taxa to be 20 species, or 80% of the 25 species. 
 
-2.4.1 sequences within each orthogroup are aligned using Mafft v7.309 
+#### 2.7 We will use the script ```filter_ogs_write_scripts.pl``` (available in the scripts directory of the DEEPC repository) to retain the orthogroup fasta files that contain a the user-specified minimum number of taxa determined above. Lastly, ```filter_ogs_write_scripts.pl``` automates the following processes: 
+
+2.7.1 sequences within each orthogroup are aligned using Mafft v7.309 
 
 ```mafft-linsi --localpair --maxiterate 1000 --thread 20 [infile] >mafft.out 2> mafft.err```
 
-2.4.2 alignments are refined using Gblockswrapper v0.03 (https://goo.gl/fDjan6)
+2.7.2 alignments are refined using Gblockswrapper v0.03 (https://goo.gl/fDjan6)
 
 ```Gblockswrapper [infile.mafft] > outfile.mafft-gb > gbw.out 2> gbw.err```
 
-2.4.3 Gblockswrapper sometimes leaves blank sequences that cause downstream issues; the ```remove_empty_seqs``` script, available in the scripts directory of this repository, removes empty sequences and spaces from sequence lines. 
+2.7.3 Gblockswrapper sometimes leaves blank sequences that cause downstream issues; the ```remove_empty_seqs``` script, available in the scripts directory of this repository, removes empty sequences and spaces from sequence lines. 
 
 ```remove_empty_seqs [outfile.mafft-gb] > res.out 2> res.err```
 
-2.4.4 Maximum-likelihood orthogroup gene trees are estimated in IQTree v1.5.5 
+2.7.4 Maximum-likelihood orthogroup gene trees are estimated in IQTree v1.5.5 
 
 ```iqtree-omp -s [infile.mafft-gb] -nt AUTO -bb 1000 -m LG -pre [output prefix] > iq.out 2> iq.err```
 
-2.4.5 orthogroups with multiple *M. ovum* sequences are pruned in PhyloTreePruner v1.0 
+2.7.5 The orthogroups with multiple sequences will be pruned in PhyloTreePruner v1.0 
 
-```java PhyloTreePruner [infile.tree] 28 [infile.align] 0.5 u > ptp.out 2> ptp.err```
+```java PhyloTreePruner [infile.tree] 25 [infile.align] 0.5 u > ptp.out 2> ptp.err```
 
 
-#### 2.5 Concatenate (insert #) single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of this repository). Definition lines in each fasta file were edited (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running ```fasta2phylomatrix```.  
+#### 2.8 Concatenate (insert #) single-copy loci filtered from step 5 to create a matrix and partition file for use in downstream phylogenomic analyses using ```fasta2phylomatrix``` (available in the scripts directory of DEEPC). We will edit the definition lines in each fasta file (```perl -pi.orig -e 's/\|.*$//;' *.fa```) prior to running ```fasta2phylomatrix```.  
 
-#### 2.6 Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
+#### 2.9 Estimate species phylogeny using concatenated and coalescent gene tree/species tree methods.  
 
-2.6.1 Concatenated matrix, Maximum Likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m TEST to find best partition scheme and estimate the tree. The partition file will be created with the script ```fasta2phylomatrix```, which is available in this respository.
-
-```
-iqtree-omp –nt [#threads] –s [infile] –pre [outfile_prefix] –spp [partition file] –m TEST –bb 1000 –bspec GENESITE > iqo.out 2> iqo.err
-```
-
-2.6.2 Concatenated matrix, Bayesian inference: estimate species phylogeny in PhyloBayes-MPI v1.7 using the concatenated dataset. If PhyloBayes is not close to convergence after 1 month runtime, we will use the jackknife approach described in Simion et al. 2017.  
+2.9.1 Concatenated matrix, Maximum Likelihood: estimate a bootstrapped (1000 ultrafast replicates) species phylogeny in IQtree v1.5.5 using the concatenated dataset. We will use the flag -m TEST to find best partition scheme and the flag -nt AUTO to determine the appropriate number of threads to use for the analysis. The partition file will be created with the script ```fasta2phylomatrix```, which is available in this respository.
 
 ```
-mpirun -n [# threads] pb_mpi -d [infile.phy] -cat -gtr chain1 > pb1.out 2> pb1.err
-mpirun -n [# threads] pb_mpi -d [infile.phy] -cat -gtr chain2 > pb2.out 2> pb2.err
-bpcomp -x [burnin] [sample_every_x_number_of_trees] <chain1> <chain2> > bpcomp.out 2> bpcomp.err
+iqtree-omp –s [infile] –pre [outfile_prefix] –spp [partition file] -nt AUTO –m TEST –bb 1000 > iqo.out 2> iqo.err
 ```
 
-2.6.3 Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
+2.9.2 Coalescent-based phylogeny: estimate the species phylogeny using ASTRAL-II v4.11.1 and ASTRID v1.4. 
 
 > i) Generate individual maximum-likelihood gene trees in IQtree. 
 
@@ -206,13 +200,38 @@ ASTRID –i [infile] –o [outfile] –m bionj > astrid.out 2> astrid.err
 
 > iv) Compute branch support using local posterior probabilities.  
 
-#### 2.7 If there are conflicting species-tree topologies from 2.7, perform SOWH tests (implemented in sowhat v.0.36) to compare topologies. Any topologies that can be rejected with a P-Value <= 0.05 will be excluded from downstream analyes (but still reported in results). Constraint trees will be added to the phylotocol before running the tests.
+#### 2. If there are conflicting species-tree topologies from 2., perform SOWH tests (implemented in sowhat v.0.36) to compare topologies. Any topologies that can be rejected with a P-Value <= 0.05 will be excluded from downstream analyes (but still reported in results). Constraint trees will be added to the phylotocol before running the tests.
 
 2.7.1 example sowhat command line
 
 ```sowhat --constraint=[topology_to_be_tested] --aln=[alignment] --name=[name] --dir=[output_dir] --rax=[raxmlHPC-PTHREADS-SSE3 -T [num_threads]] ```
 
 
-## 3 WORK COMPLETED SO FAR WITH DATES  
+## 3. WORK COMPLETED SO FAR WITH DATES  
 
-October 5 2017- we have completed steps [insert] prior to release of phylotocol version 1.0
+December 22, 2017: We have completed steps 2.1-2.6 prior to the release of phylotocol v 1.0
+
+## 4. LITERATURE REFERENCED 
+
+Church, S. H., Ryan, J. F., & Dunn, C. W. (2015). Automation and evaluation of the SOWH Test with SOWHAT. Systematic Biology, 64(6), 1048-1058.
+
+Dunn CW, Howison M, Zapata F. 2013. Agalma: an automated phylogenomics workflow. BMC Bioinformatics 14(1): 330. doi:10.1186/1471-2105-14-330
+
+Emms, D. M., & Kelly, S. (2015). OrthoFinder: solving fundamental biases in whole genome comparisons dramatically improves orthogroup inference accuracy. Genome Biology, 16(1), 157.
+Gblockswrapper: http://bit.ly/2svaKcR
+
+Kocot, K. M., Citarella, M. R., Moroz, L. L., & Halanych, K. M. (2013). PhyloTreePruner: a phylogenetic tree-based approach for selection of orthologous sequences for phylogenomics. Evolutionary Bioinformatics Online, 9, 429.
+
+Miller, A. K., Kerr, A. M., Paulay, G., Reich, M., Wilson, N. G., Carvajal, J. I., & Rouse, G. W. (2017). Molecular phylogeny of extant Holothuroidea (Echinodermata). Molecular Phylogenetics and Evolution, 111, 110-131.
+
+Mirarab, S., & Warnow, T. (2015). ASTRAL-II: coalescent-based species tree estimation with many hundreds of taxa and thousands of genes. Bioinformatics, 31(12), i44-i52.
+
+Nguyen, L. T., Schmidt, H. A., von Haeseler, A., & Minh, B. Q. (2014). IQ-TREE: a fast and effective stochastic algorithm for estimating maximum-likelihood phylogenies. Molecular Biology and Evolution, 32(1), 268-274.
+
+Suyama, M., Torrents, D., & Bork, P. (2006). PAL2NAL: robust conversion of protein sequence alignments into the corresponding codon alignments. Nucleic Acids Research, 34(suppl_2), W609-W612.
+
+TransDecoder: https://transdecoder.github.io/
+
+Vachaspati, P., & Warnow, T. (2015). ASTRID: accurate species trees from internode distances. BMC Genomics, 16(10), S3.
+
+Yamada, K. D., Tomii, K., & Katoh, K. (2016). Application of the MAFFT sequence alignment program to large data—reexamination of the usefulness of chained guide trees. Bioinformatics, 32(21), 3246-3251.
