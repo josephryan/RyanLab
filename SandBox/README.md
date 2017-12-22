@@ -208,6 +208,7 @@ ASTRID –i [infile] –o [outfile] –m bionj > astrid.out 2> astrid.err
 
 ## 3. WORK COMPLETED SO FAR WITH DATES  
 
+October 5, 2017: We have completed steps 2.1-2.2.1 prior to the release of phylotocol v 1.0 
 December 22, 2017: We have completed steps 2.1-2.6 prior to the release of phylotocol v 1.0
 
 ## 4. LITERATURE REFERENCED 
