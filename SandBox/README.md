@@ -72,7 +72,7 @@ perl /bwdata1/jfryan/38-SIMION_DATA/02-FILTER_ILLUMINA/fix_names.pl SRR2484238.1
 
 #### 2.4 
 
-#### 2.1 Translate holothurian nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We will set the –m flag to 50 and use the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
+#### 2.5 Translate holothurian nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We will set the –m flag to 50 and use the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
 
 ```
 TransDecoder.LongOrfs -t [transcriptome_file] -m 50 > td.out 2> td.err
@@ -90,22 +90,21 @@ hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep > hs.o
 TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits out.domtblout --retain_blastp_hits out.blastp.out > tdp.out 2> tdp.err
 ```
 
-#### 2.2 We will use the program [Alien Index](https://github.com/josephryan/alien_index) and a database of representative metazoan and non-metazoan sequences (http://ryanlab.whitney.ufl.edu/downloads/alien_index/) to remove any contaminating, non-metazoan sequences. 
+#### 2.6 We will use the program [Alien Index](https://github.com/josephryan/alien_index) and a database of representative metazoan and non-metazoan sequences (http://ryanlab.whitney.ufl.edu/downloads/alien_index/) to remove any contaminating, non-metazoan sequences. 
 
 ```
 blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes -evalue 0.001 -out [file.out] > file.std 2> file.err
 ```
 
 ```
-./alien_index --blast=[file_ai.out] --alien_pattern=ALIEN [out.alien_index] > ai.out 2> ai.err 
+../alien_index --blast=[file_ai.out] --alien_pattern=ALIEN [out.alien_index] > ai.out 2> ai.err 
 ```
 
 ```
-remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_transcriptome.fa] > ra.out 2> ra.err
+perl /usr/local/bin/remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_transcriptome.fa] > ra.out 2> ra.err
 ```
 
-#### 2.3 We will identify orthogroups across holothurian transcriptomes in OrthoFinder v1.1.4.  
-
+#### 2.7 We will identify orthogroups across holothurian transcriptomes in OrthoFinder v1.1.4. The first step generated 676 blastp files. We used the script `blastp_parser.pl` [which can be found in the script repository] in order to separate the blastp files into smaller .sh files so they could be executed sequentially on the servers. 
 ```
 orthofinder -f [dir_w_protein_fast_files] -op > of.out 2> of.err
 ```
@@ -117,10 +116,17 @@ blastp -outfmt 6 -evalue 0.001 -query [renamed_fasta_file_w_all_seqs] -db BlastD
 ```
 orthofinder -b [dir_w_blast_results] > ofb.out 2> ofb.err
 ```
+#### At this point we recognized a mis-labeled transcriptome from the NCBI database indicating that there was a duplicate transcriptome. I re-ran: 
+```
+orthofinder -b [dir_w_blast_results] > ofb.out 2> ofb.err
+```
+### and removed the duplicate transcriptome by placing a `#` in front of the duplicate species in the `SpeciesIDs.txt` file generated from the previous analysis. 
 
 ```
 python trees_from_MSA.py [dir_w_orthofinder_results] > tfm.out 2> tfm.err
 ```
+
+#### 2.8  
 
 #### 2.4 Generate single copy orthogroups. First, the script ```filter_ogs_write_scripts.pl``` (available in the scripts directory of this repository) retains orthogroup fasta files that contain a user-specified minimum number of taxa (need to determine the scope of this). Lastly, ```filter_ogs_write_scripts.pl``` automates the following processes: 
 
