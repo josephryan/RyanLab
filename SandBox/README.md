@@ -15,11 +15,11 @@ Sea cucumbers are the most apomorphic echinoderms: bilaterally symmetrical worms
 
 ### 1.2 _Rationale_ 
 
-An in-depth understanding of phylogenetic relationships is essential 
+An in-depth understanding of phylogenetic relationships is essential to understand how holothurians have adapted to the varied environments that they inhabit. Additionally, comprehension of their evolutionary relationships can directly influence fishing and conservation initiatives. The combination of a backbone phylogeny built with hundreds of genes and high-quality baits for target enrichment, will help bring phylogenetic resolution to this fascinating group of animals and provide an important set of resources for systematists to conduct low-cost phylogenetic and population sampling. 
 
 ### 1.3 _Objectives_  
 
-The overall objective is to test the recently proposed topology (Miller et al. 2017) of higher-level relationships of holothurians. With the sea cucumber orthogroups identified through our phylogenetic analysis, and our recently published draft *Australostichopus mollis* genome (Long et al. 2016) we will design a set of target-enrichment baits for Holothuroidea. The combination of a backbone phylogeny built with hundreds of genes and high-quality baits for target enrichment, will help bring phylogenetic resolution to this fascinating group of animals and provide an important set of resources for systematists to conduct low-cost phylogenetic and population sampling. 
+The overall objective is to test the recently proposed topology (Miller et al. 2017) of higher-level relationships of holothurians. With the sea cucumber orthogroups identified through our phylogenetic analysis, and our recently published draft *Australostichopus mollis* genome (Long et al. 2016) we will design a set of target-enrichment baits for Holothuroidea. 
 
 ## 2 STUDY DESIGN AND ENDPOINTS 
 
@@ -28,7 +28,7 @@ The overall objective is to test the recently proposed topology (Miller et al. 2
 taxa name [ORGN] AND Illumina BUTNOT genotyping BUTNOT metagenome BUTNOT mRNA
 ```
 
-2.1.1 Downloaded and split the seventeen SRR sequences using SRA toolkit (https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software). FASTQ files were then renamed and compressed. 
+2.1.1 Download and split the seventeen SRR sequences using SRA toolkit (https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software) then rename and compress the FASTQ files. 
 
 ```
 fastq-dump --defline-seq '@$sn[_$rn]/$ri' --split-files SRR[number] > fqd.SRR[number].out 2> fqd.SRR[number].err &
@@ -42,15 +42,15 @@ mv SRR[number]_1.fastq SRR[number]_pass_1.fastq
 pigz -9 SRR[number]_pass_1.fastq
 ```
 
-#### 2.2 We will use BL-FILTER on the publically available transcriptomes and our transcriptomes, part of the Agalma pipeline (Dunn et al. 2013) to trim the adapters added from Illumina RNA-Seq.
+#### 2.2 Use BL-FILTER on the publically available transcriptomes and our transcriptomes, part of the Agalma pipeline (Dunn et al. 2013) to trim the adapters added during Illumina RNA-Seq.
 
-2.2.1 BL-FILTER and organizational steps for downloaded transcriptomes. Similar steps  applied to our transcriptomes with slight variation at the beginning due to different file names.   
+2.2.1 BL-FILTER and organizational steps for downloaded transcriptomes. Similar steps are applied to our transcriptomes, with slight variation at the beginning due to different file names.   
 
 ```
 bl-filter-illumina -a -i ../../00-DATA/fastq/SRR[number]_pass_1.fastq.gz -i ../../00-DATA/fastq/[number]_pass_2.fastq.gz -o SRR[number].1.fq -o SRR[number].2.fq -u SRR[number].unp.fq > blf.out 2> blf.err &
 ```
 
-We copied the trimmed adapter file and concatonated the unpaired sequences to this new file. We linked the second trimmed adapter file to a new file so that file naming was consistent. 
+Copy the trimmed adapter file and concatonate the unpaired sequences to a new file. Link the second trimmed adapter file to a new file so that file naming was consistent. 
 
 ```
 cp SRR[number].1.fq all_1.fq
@@ -64,17 +64,18 @@ cat SRR[number].unp.fq >> all_1.fq
 ln -s SRR2830762.2.fq.gz all_2.fq.gz
 ```
 
-2.2.2 We used the script ```fix_names.pl``` in order to fix the deflines of the SRA files so that they were formatted properly for transcriptome assembly using Trinity. This script is available in the scripts directory in this repository. 
+2.2.2 Use the script ```fix_names.pl``` in order to fix the deflines of the SRA files so that they are formatted properly for transcriptome assembly with Trinity. This script is available in the scripts directory in this repository. 
 
 ```
 perl /bwdata1/jfryan/38-SIMION_DATA/02-FILTER_ILLUMINA/fix_names.pl SRR2484238.1.fq.gz SRR2484238.2.fq.gz SRR2484238.unp.fq.gz > fix_sra_names.out 2> fix_sra_names.err
 ```
 
-#### 2.3 We used Trinity v2.4.0 for de novo transcriptome assembly. Trinity runs were initially started with higher memory and central processors, however, we lowered those values due to server constraints. 
+#### 2.3 De novo transcriptome assembly with Trinity v2.4.0.  
 
 ```
 /usr/local/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --max_memory 750G --CPU 12 --left ../01-BL-FILTER/SRR[number].1.fq.renamed --right ../01-BL-FILTER/SRR[number].2.fq.renamed --full_cleanup --normalize_reads --normalize_max_read_cov 30 > trin.out 2> trin.err &
 ```
+##### Note 12/21/17: Trinity runs were initially started with higher memory and central processors, however, we lowered those values due to server constraints.
 
 #### 2.4 
 
@@ -96,7 +97,7 @@ hmmscan --cpu 1 --domtblout outfile.domtblout Pfam-A.hmm longest_orfs.pep > hs.o
 TransDecoder.Predict -t [transcriptome_file] --retain_pfam_hits out.domtblout --retain_blastp_hits out.blastp.out > tdp.out 2> tdp.err
 ```
 
-#### 2.6 We will use the program [Alien Index](https://github.com/josephryan/alien_index) and a database of representative metazoan and non-metazoan sequences (http://ryanlab.whitney.ufl.edu/downloads/alien_index/) to remove any contaminating, non-metazoan sequences. 
+#### 2.6 The program [Alien Index](https://github.com/josephryan/alien_index) and a database of representative metazoan and non-metazoan sequences (http://ryanlab.whitney.ufl.edu/downloads/alien_index/) will allow us to remove any contaminating, non-metazoan sequences. 
 
 ```
 blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes -evalue 0.001 -out [file.out] > file.std 2> file.err
@@ -110,10 +111,11 @@ blastp -query [infile.pep.fa] -db ai.fa -outfmt 6 -max_target_seqs 1000 -seg yes
 perl /usr/local/bin/remove_aliens.pl [out.alien_index] [original_transcriptome.fa] > [filtered_transcriptome.fa] > ra.out 2> ra.err
 ```
 
-#### 2.7 We will identify orthogroups across holothurian transcriptomes in OrthoFinder v1.1.4. The first step generated 676 blastp files. We used the script `blastp_parser.pl` [which can be found in the script repository] in order to separate the blastp files into smaller .sh files so they could be executed sequentially on the servers. 
+#### 2.7 Identify orthogroups across holothurian transcriptomes with OrthoFinder v1.1.8. 
 ```
 orthofinder -f [dir_w_protein_fast_files] -op > of.out 2> of.err
 ```
+##### Note 12/21/17: The first step generated 676 blastp files. We used the script `blastp_parser.pl` [which can be found in the script repository] in order to separate the blastp files into smaller .sh files so they could be executed sequentially on the servers. 
 
 ```
 blastp -outfmt 6 -evalue 0.001 -query [renamed_fasta_file_w_all_seqs] -db BlastDB -out outfile.txt > blastp.out 2> blastp.err
@@ -122,7 +124,7 @@ blastp -outfmt 6 -evalue 0.001 -query [renamed_fasta_file_w_all_seqs] -db BlastD
 ```
 orthofinder -b [dir_w_blast_results] > ofb.out 2> ofb.err
 ```
-##### At this point we recognized a mis-labeled transcriptome from the NCBI database indicating that there was a duplicate transcriptome. I re-ran: 
+##### Note: 12/21/17: At this point we recognized a mis-labeled transcriptome from the NCBI database indicating that there was a duplicate transcriptome. I re-ran: 
 ```
 orthofinder -b [dir_w_blast_results] > ofb.out 2> ofb.err
 ```
