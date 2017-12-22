@@ -116,11 +116,11 @@ blastp -outfmt 6 -evalue 0.001 -query [renamed_fasta_file_w_all_seqs] -db BlastD
 ```
 orthofinder -b [dir_w_blast_results] > ofb.out 2> ofb.err
 ```
-#### At this point we recognized a mis-labeled transcriptome from the NCBI database indicating that there was a duplicate transcriptome. I re-ran: 
+##### At this point we recognized a mis-labeled transcriptome from the NCBI database indicating that there was a duplicate transcriptome. I re-ran: 
 ```
 orthofinder -b [dir_w_blast_results] > ofb.out 2> ofb.err
 ```
-### and removed the duplicate transcriptome by placing a `#` in front of the duplicate species in the `SpeciesIDs.txt` file generated from the previous analysis. 
+##### and removed the duplicate transcriptome by placing a `#` in front of the duplicate species in the `SpeciesIDs.txt` file generated from the previous analysis. 
 
 ```
 python trees_from_MSA.py [dir_w_orthofinder_results] > tfm.out 2> tfm.err
