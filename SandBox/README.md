@@ -199,9 +199,9 @@ ASTRID –i [infile] –o [outfile] –m bionj > astrid.out 2> astrid.err
 
 > iv) Compute branch support using local posterior probabilities.  
 
-#### 2. If there are conflicting species-tree topologies from 2., perform SOWH tests (implemented in sowhat v.0.36) to compare topologies. Any topologies that can be rejected with a P-Value <= 0.05 will be excluded from downstream analyes (but still reported in results). Constraint trees will be added to the phylotocol before running the tests.
+#### 2.10 If there are conflicting species-tree topologies from 2., perform SOWH tests (implemented in sowhat v.0.36) to compare topologies. Any topologies that can be rejected with a P-Value <= 0.05 will be excluded from downstream analyes (but still reported in results). Constraint trees will be added to the phylotocol before running the tests.
 
-2.7.1 example sowhat command line
+2.10.1 example sowhat command line
 
 ```sowhat --constraint=[topology_to_be_tested] --aln=[alignment] --name=[name] --dir=[output_dir] --rax=[raxmlHPC-PTHREADS-SSE3 -T [num_threads]] ```
 
