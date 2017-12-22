@@ -77,7 +77,14 @@ perl /bwdata1/jfryan/38-SIMION_DATA/02-FILTER_ILLUMINA/fix_names.pl SRR2484238.1
 ```
 ##### Note 12/21/17: Trinity runs were initially started with higher memory and central processors, however, we lowered those values due to server constraints.
 
-#### 2.4 
+#### 2.4 Use RSEM (Li and Dewey, 2011) to measure the gene and isoform abundance.
+```
+/usr/local/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl --transcripts ../02-TRINITY/trinity_out_dir.Trinity.fasta --seqType fq --left ../01-BL-FILTER/SRR5755244.1.fq.gz --right ../01-BL-FILTER/SRR5755244.2.fq.gz --output_dir aea --est_method RSEM --aln_method bowtie2 --thread_count 100 --prep_reference > aea.out 2> aea.err &
+```
+
+```
+rsemgetbestseqs.py ./aea/RSEM.isoforms.results ../02-TRINITY/trinity_out_dir.Trinity.fasta > rgbs.out 2> rgbs.err &
+```
 
 #### 2.5 Translate holothurian nucleotide transcriptome sequences into amino acid sequences with TransDecoder v3.0.0. We will set the –m flag to 50 and use the results from blast and hmmscan searches to inform the final TransDecoder prediction step.  
 
