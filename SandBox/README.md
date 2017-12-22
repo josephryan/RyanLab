@@ -9,11 +9,17 @@
  
 ## 1 INTRODUCTION: BACKGROUND INFORMATION AND SCIENTIFIC RATIONALE  
 
-### 1.1 _Background Information_  
+### 1.1 _Background Information_
 
-### 1.2 _Rationale_   
+Sea cucumbers are the most apomorphic echinoderms: bilaterally symmetrical worms with a reduced skeleton. They have evolved bizarre specializations such as anal suspension feeding, evisceration, sticky Cuvierian tubules that entangle attackers, and a “melting” body wall. They are abundant, ubiquitous in the benthos, from poles to equator, intertidal to the deepest trenches, and include >1700 species in 25 families. They are among the most conspicuous mobile invertebrates on reefs and the deep sea and constitute the largest invertebrate fishery on Pacific islands, with stocks fully depleted throughout the tropics. A recent six gene molecular phylogeny showed substantial conflict with previous morphological-based relationships (Miller et al. 2017). Here, we present a the pipeline of our phylogenomic analysis of Holothuroidea using 9 unpublished and 16 published transcriptomes.
+
+### 1.2 _Rationale_ 
+
+An in-depth understanding of phylogenetic relationships is essential 
 
 ### 1.3 _Objectives_  
+
+The overall objective is to test the recently proposed topology (Miller et al. 2017) of higher-level relationships of holothurians. With the sea cucumber orthogroups identified through our phylogenetic analysis, and our recently published draft *Australostichopus mollis* genome (Long et al. 2016) we will design a set of target-enrichment baits for Holothuroidea. The combination of a backbone phylogeny built with hundreds of genes and high-quality baits for target enrichment, will help bring phylogenetic resolution to this fascinating group of animals and provide an important set of resources for systematists to conduct low-cost phylogenetic and population sampling. 
 
 ## 2 STUDY DESIGN AND ENDPOINTS 
 
@@ -36,9 +42,9 @@ mv SRR[number]_1.fastq SRR[number]_pass_1.fastq
 pigz -9 SRR[number]_pass_1.fastq
 ```
 
-#### 2.2 We trimmed the adapters added from Illumina RNA-Seq for the publically available transcriptomes and our transcriptomes.     
+#### 2.2 We will use BL-FILTER on the publically available transcriptomes and our transcriptomes, part of the Agalma pipeline (Dunn et al. 2013) to trim the adapters added from Illumina RNA-Seq.
 
-2.2.1 BL-FILTER and organizational steps for downloaded transcriptomes. Similar steps were applied to our transcriptomes with slight variation at the beginning due to different file names.   
+2.2.1 BL-FILTER and organizational steps for downloaded transcriptomes. Similar steps  applied to our transcriptomes with slight variation at the beginning due to different file names.   
 
 ```
 bl-filter-illumina -a -i ../../00-DATA/fastq/SRR[number]_pass_1.fastq.gz -i ../../00-DATA/fastq/[number]_pass_2.fastq.gz -o SRR[number].1.fq -o SRR[number].2.fq -u SRR[number].unp.fq > blf.out 2> blf.err &
