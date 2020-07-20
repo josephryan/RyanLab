@@ -1,2 +1,2 @@
 # RyanLab
-Repository for supplementary materials produced by the Ryan Lab 
+Repo for Zwarycz et al, 2015 and Hernandez & Ryan, 2017. We now do one repo per study. 
